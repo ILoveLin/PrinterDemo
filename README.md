@@ -8,10 +8,10 @@
 
 
 
-* 官方打印文档链接地址:
+* 官方打印图片链接地址:
 * //打印图片
 * https://developer.android.google.cn/training/printing/photos?hl=zh-cn
-* //打印自定义文档
+* //打印自定义文档链接地址:
 * https://developer.android.google.cn/training/printing/custom-docs?hl=zh-cn
     
 *  同一个局域网下,搜索wifi下的网络打印机,然后打印图片,或者打印自定义文档(高精度效果最好)
