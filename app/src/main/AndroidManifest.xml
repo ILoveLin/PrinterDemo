@@ -34,7 +34,8 @@
         </provider>
 
         <activity android:name=".report.PrintPictureReportActivity" />
-        <activity android:name=".report.PrintPdfReportActivity" />
+        <activity android:name=".report.PrintPdfReportLocalImageActivity" />
+        <activity android:name=".report.PrintPdfReportNetImageActivity" />
 
     </application>
 

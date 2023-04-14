@@ -20,10 +20,19 @@
             android:layout_height="50dp"
             android:background="@color/blue"
             android:gravity="center"
-            android:text="跳转,打印自定义文档"
+            android:text="跳转,打印自定义文档(报告中图片是SD卡本地文件)"
             android:textColor="@color/white"
-            android:textSize="20sp" />
-
+            android:textSize="18sp" />
+        <TextView
+            android:layout_marginTop="10dp"
+            android:id="@+id/tv_pdf_online"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/blue"
+            android:gravity="center"
+            android:text="跳转,打印自定义文档(文档中图片是网络图片)"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
         <TextView
             android:id="@+id/tv_picture"
             android:layout_width="match_parent"
@@ -33,7 +42,7 @@
             android:gravity="center"
             android:text="跳转,打印照片"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 

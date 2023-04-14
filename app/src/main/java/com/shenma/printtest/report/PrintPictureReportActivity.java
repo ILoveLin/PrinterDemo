@@ -31,7 +31,6 @@ import java.io.FileOutputStream;
  * desc：网络打印机-----打印图片    比较模糊(报告质量的好坏,取决于图片的分辨率和像素)
  */
 public class PrintPictureReportActivity extends AppCompatActivity {
-
     private TextView mTV, mTVName;
     private View view, mPrintLayout;
     private PrintHelper photoPrinter;
