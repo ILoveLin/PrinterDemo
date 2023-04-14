@@ -79,7 +79,6 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
     private Context context;
     private boolean isPermissions = false;
     private String absolutePath;
-    private PDFViewPager pdfViewPager;
     private PDFView pdfView;
     private String mImagePath;
     private Document document;

@@ -81,7 +81,6 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
     private DeviceRgb text_title_color;
     private DeviceRgb text_color;
     private ArrayList<LabelBean> mRepoerLabelList;
-    private Paragraph mTitleLayout;
     private Paragraph mLayout;
     private ArrayList<LabelBean> mLogoList;
     private ArrayList<LabelBean> mImageList;
