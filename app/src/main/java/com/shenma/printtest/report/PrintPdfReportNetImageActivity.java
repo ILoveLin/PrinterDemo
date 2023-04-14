@@ -489,7 +489,11 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
             }
 
         }
-
+        //4,画Text文字布局
+        for (int i = 0; i < mTextList.size(); i++) {
+            LabelBean mBean = mTextList.get(i);
+            DrawTextLayout(mBean, "TextLayout");
+        }
         //3,B:画报告选中图片
         //开启线程去加载网络图片,并且画如PDF之中
         startThreadLoadingNetworkImage();
@@ -504,7 +508,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         //画报告中的图片,开启线程去画 result是线程返回的结果,result.isDone() 表示线程执行完毕
         ExecutorService executor = Executors.newCachedThreadPool();
         TaskLogo tasklogo = new TaskLogo();
-        Task task = new Task();
+        ImageTask task = new ImageTask();
         TaskImageSketch taskSketch = new TaskImageSketch();
         //在线访问,logo图片
         Future<String> resultLogo = executor.submit(tasklogo);
@@ -513,11 +517,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         //在线访问,报告图片
         Future<String> result = executor.submit(task);
 
-        //4,画Text文字布局
-        for (int i = 0; i < mTextList.size(); i++) {
-            LabelBean mBean = mTextList.get(i);
-            DrawTextLayout(mBean, "TextLayout");
-        }
+
 
         try {
             LogUtils.e("Task:===Task == result=get=" + result.get(18, TimeUnit.SECONDS));
@@ -544,7 +544,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
      * 有返回值的线程(如果不动请百度或者访问下面链接查看使用示例)
      * https://github.com/ILoveLin/toBeBetterJavaer/blob/master/docs/thread/callable-future-futuretask.md
      */
-    private class Task implements Callable<String> {
+    private class ImageTask implements Callable<String> {
         @Override
         public String call() throws Exception {
             ArrayList<LabelBean> mTempList = new ArrayList<>();
@@ -557,7 +557,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
 
             LabelBean mBean = null;
             int sum = 0;
-            int size = mTempList.size();
+            int size = mTempList.size()-1;
             LogUtils.e("Task:===Task == mImageAreaList.size()==" + mTempList.size());
 
             for (int i = 0; i < mTempList.size(); i++) {
@@ -566,6 +566,9 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
                 LogUtils.e("Task:===Task == sum==" + sum);
                 sum = i;
                 LogUtils.e("Task:===Task == sum==" + sum);
+
+
+
                 float left = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getLeft()), mPageSize);
                 float right = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getRight()), mPageSize);
                 float top = CommonUtils.getScaleTop2Bottom(Float.parseFloat(mBean.getTop()), mPageSize);
@@ -579,6 +582,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
                     try {
                         //网络图片url
                         if (mBean.getOrder().equals("1")) { //报告中,第一张图
+//                            httpPictureUrl = "http://192.168.67.66:7001/124/002.jpg";
                             httpPictureUrl = "https://www.baidu.com/img/bdlogo.png";
                         }
                         if (mBean.getOrder().equals("2")) { //报告中,第一张图
@@ -655,7 +659,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
 
             LabelBean mBean = null;
             int sum = 0;
-            int size = mTempList.size();
+            int size = mTempList.size()-1;
             LogUtils.e("Task:===Task == mImageAreaList.size()==" + mTempList.size());
 
             for (int i = 0; i < mTempList.size(); i++) {
@@ -717,15 +721,15 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         public String call() throws Exception {
             LabelBean mBean = null;
             int sum = 0;
-            int size = mLogoList.size();
-            LogUtils.e("Task:===Task == mImageAreaList.size()==" + mLogoList.size());
+            int size = mLogoList.size()-1;
+            LogUtils.e("Task:===Tasklogo == mImageAreaList.size()==" + mLogoList.size());
 
             for (int i = 0; i < mLogoList.size(); i++) {
                 mBean = mLogoList.get(i);
-                LogUtils.e("Task:===Task == mBean==" + mBean.toString());
-                LogUtils.e("Task:===Task == sum==" + sum);
+                LogUtils.e("Task:===Tasklogo == mBean==" + mBean.toString());
+                LogUtils.e("Task:===Tasklogo == sum==" + sum);
                 sum = i;
-                LogUtils.e("Task:===Task == sum==" + sum);
+                LogUtils.e("Task:===Tasklogo == sum==" + sum);
                 float left = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getLeft()), mPageSize);
                 float right = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getRight()), mPageSize);
                 float top = CommonUtils.getScaleTop2Bottom(Float.parseFloat(mBean.getTop()), mPageSize);
