@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.github.barteksc.pdfviewer.PDFView;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
@@ -39,6 +41,7 @@ import com.shenma.printtest.util.LabelBean;
 import com.shenma.printtest.util.LogUtils;
 import com.shenma.printtest.util.SaxHelper2Text;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -102,6 +105,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
     private PageSize mPageSize;
     private DeviceRgb title_color;
     private String httpPictureUrl;
+    private TextView mFontSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +124,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         pdfView = findViewById(R.id.pdfView);
         print_report = findViewById(R.id.print_report);
         edit_num = findViewById(R.id.edit_num);
+        mFontSetting = findViewById(R.id.set_font_song_ti);
         mSizeA3 = findViewById(R.id.btn_a3);
         mSizeA4 = findViewById(R.id.btn_a4);
         mSizeB5 = findViewById(R.id.btn_b5);
@@ -129,6 +134,21 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
 
         String str = "请先点击(1:读取图片模板),然后点击(2:A3 A4 B5,纸张类型中的一种),再点击(3:生成PDF文件),最后点击(5:打开PDF文件,或者点击打印报告)";
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+        byte[] bytes = readStream("STSONG.TTF");
+        //读取自定义字体 宋体
+        String fontPath = Environment.getExternalStorageDirectory() + "/CME_PDF/STSONG.TTF";
+        File file = new File(fontPath);
+        if (file.exists()) {
+            file.delete();
+        }
+        file.getParentFile().mkdirs();
+
+        boolean simsun = writeFile(bytes, "CME_PDF", "STSONG.TTF");
+        Log.e("readXmlForSAX", "simsun==size==" + simsun);
+
+        File file2 = new File(fontPath);
+        Log.e("readXmlForSAX", "simsun==file.exists()==" + file2.exists());
+
 
     }
 
@@ -141,11 +161,22 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         }
     }
 
+    //是否设置宋体字体  true=设置过了,false=未设置(默认选项)
+    private boolean mTagSettingFont = false;
+
     private void onResponseListener() {
         findViewById(R.id.black).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        mFontSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTagSettingFont = true;
+
+
             }
         });
 
@@ -374,11 +405,24 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         // 文字字体（显示中文）、大小、颜色
         font = null;
         try {
-            font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
+            //未设置的时候使用默认字体
+            if (mTagSettingFont) {
+                String s = Environment.getExternalStorageDirectory() + "/CME_PDF/STSONG.TTF";
+                font = PdfFontFactory.createFont(s, PdfEncodings.IDENTITY_H, true);
+                String str = "设置pdf字体格式为:宋体(window版本)";
+                Toast.makeText(PrintPdfReportNetImageActivity.this, str, Toast.LENGTH_SHORT).show();
+
+            } else {
+                font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
+
+            }
+
+
         } catch (IOException e) {
+            Log.e("IOException--字体问题", e.toString());
             Log.e("IOException", e.toString());
         }
-//        simsun.ttc
+//        STSONG.TTF
 
 
         title_color = CommonUtils.getColorRgba(32768);
@@ -518,7 +562,6 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         Future<String> result = executor.submit(task);
 
 
-
         try {
             LogUtils.e("Task:===Task == result=get=" + result.get(18, TimeUnit.SECONDS));
             LogUtils.e("Task:===Task == result=resultLogo.isDone()=" + resultLogo.isDone());
@@ -557,7 +600,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
 
             LabelBean mBean = null;
             int sum = 0;
-            int size = mTempList.size()-1;
+            int size = mTempList.size() - 1;
             LogUtils.e("Task:===Task == mImageAreaList.size()==" + mTempList.size());
 
             for (int i = 0; i < mTempList.size(); i++) {
@@ -566,7 +609,6 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
                 LogUtils.e("Task:===Task == sum==" + sum);
                 sum = i;
                 LogUtils.e("Task:===Task == sum==" + sum);
-
 
 
                 float left = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getLeft()), mPageSize);
@@ -659,7 +701,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
 
             LabelBean mBean = null;
             int sum = 0;
-            int size = mTempList.size()-1;
+            int size = mTempList.size() - 1;
             LogUtils.e("Task:===Task == mImageAreaList.size()==" + mTempList.size());
 
             for (int i = 0; i < mTempList.size(); i++) {
@@ -721,7 +763,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         public String call() throws Exception {
             LabelBean mBean = null;
             int sum = 0;
-            int size = mLogoList.size()-1;
+            int size = mLogoList.size() - 1;
             LogUtils.e("Task:===Tasklogo == mImageAreaList.size()==" + mLogoList.size());
 
             for (int i = 0; i < mLogoList.size(); i++) {
@@ -736,29 +778,29 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
                 float bottom = CommonUtils.getScaleTop2Bottom(Float.parseFloat(mBean.getBottom()), mPageSize);
                 float mWidth = right - left;
                 float mHeight = bottom - top;
-                    //网络图片url
-                    String url = "http://www.baidu.com/img/bdlogo.png";
-                    try {
-                        Image image5 = new Image(ImageDataFactory.create(url));
-                        image5.setWidth(mWidth);
-                        image5.setHeight(mHeight);
-                        Paragraph mImageLayoutSketch = new Paragraph().add(image5);
-                        //left 设置20  默认右移动了20
-                        //top 设置20  默认下移动了20
-                        //right 设置20  默认左移动了20
-                        //bottom 设置20  默认上移动了20
-                        mImageLayoutSketch.setFixedPosition(1, left, CommonUtils.getScaleFixTopNum(Float.parseFloat(mBean.getBottom()), mPageSize), mWidth);
-                        document.add(mImageLayoutSketch);
-                    } catch (MalformedURLException e) {
-                        Log.e("PrintPdfReportActivity", "添加logo:添加图片:747行,图片不存在,请能正常访问的网络图片");
-                        Log.e("PrintPdfReportActivity", "图片不存在,url=" + url);
-                        e.printStackTrace();
-                    }
-                    if (size == sum) {
-                        return sum + "";
-                    } else {
+                //网络图片url
+                String url = "http://www.baidu.com/img/bdlogo.png";
+                try {
+                    Image image5 = new Image(ImageDataFactory.create(url));
+                    image5.setWidth(mWidth);
+                    image5.setHeight(mHeight);
+                    Paragraph mImageLayoutSketch = new Paragraph().add(image5);
+                    //left 设置20  默认右移动了20
+                    //top 设置20  默认下移动了20
+                    //right 设置20  默认左移动了20
+                    //bottom 设置20  默认上移动了20
+                    mImageLayoutSketch.setFixedPosition(1, left, CommonUtils.getScaleFixTopNum(Float.parseFloat(mBean.getBottom()), mPageSize), mWidth);
+                    document.add(mImageLayoutSketch);
+                } catch (MalformedURLException e) {
+                    Log.e("PrintPdfReportActivity", "添加logo:添加图片:747行,图片不存在,请能正常访问的网络图片");
+                    Log.e("PrintPdfReportActivity", "图片不存在,url=" + url);
+                    e.printStackTrace();
+                }
+                if (size == sum) {
+                    return sum + "";
+                } else {
 
-                    }
+                }
 
             }
             return null;
@@ -1178,5 +1220,63 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
             }
         });
         return dataList;
+    }
+
+    public byte[] readStream(String fileName) {
+        try {
+            InputStream inStream = getResources().getAssets().open(fileName);
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len = -1;
+            while ((len = inStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, len);
+            }
+            outStream.close();
+            inStream.close();
+            return outStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    //把文件写到存储目录
+    public static boolean writeFile(byte[] buffer, String folder,
+                                    String fileName) {
+        boolean writeSucc = false;
+
+        boolean sdCardExist = Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED);
+
+        String folderPath = "";
+        if (sdCardExist) {
+            folderPath = Environment.getExternalStorageDirectory()
+                    + File.separator + folder + File.separator;
+        } else {
+            writeSucc = false;
+        }
+
+        File fileDir = new File(folderPath);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
+
+        File file = new File(folderPath + fileName);
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file, true);
+            out.write(buffer);
+            writeSucc = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return writeSucc;
     }
 }
