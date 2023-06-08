@@ -120,7 +120,10 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
         path = Environment.getExternalStorageDirectory() + "/report_local.pdf";
         mImagePath = Environment.getExternalStorageDirectory() + "/C_CME/001.jpg";
 
-        String str = "请先点击(1:读取图片模板),然后点击(2:A3 A4 B5,纸张类型中的一种),再点击(3:生成PDF文件),最后点击(5:打开PDF文件,或者点击打印报告)";
+        String str = "请先点击(1:读取图片模板)," +
+                "然后点击(2:A3 A4 B5,纸张类型中的一种)," +
+                "再点击(3:生成PDF文件)," +
+                "最后点击(5:打开PDF文件,或者点击打印报告)";
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
 
     }
@@ -350,6 +353,10 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
             LabelBean mBean = mLogoList.get(i);
             absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             Paragraph imageLogo = null;
+            /**
+             * /C_CME/image_01.jpg   这个是我自己本地图片路径,请替换成你自己的,不然会闪退
+             * 记得替换成自己的手机本地图片路径
+             */
             mLogoPath = absolutePath + "/C_CME/image_01.jpg";
             mImagePath = absolutePath + "/C_CME/image_03.png";
 
@@ -362,7 +369,6 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
             float mHeight = bottom - top;
             //添加logo
             try {
-
                 Image image5 = new Image(ImageDataFactory.create(mLogoPath));
                 image5.setWidth(mWidth);
                 image5.setHeight(mHeight);
