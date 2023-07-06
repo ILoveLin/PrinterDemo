@@ -45,13 +45,19 @@
 ![](picture/gif/1.gif) 
 
 
-
+ ## 报告截图欣赏
+ 
+ ## 报告截图,报告中红色和蓝色是我故意用颜色设置的,方便Demo查看 实际应用中可以取消掉的
+ 
+ ![](report/PDF报告在SD卡的文件.png) ![](report/使用SD卡本地图片报告示例.jpg) ![](report/使用在线网络图的报告示例.jpg)
 
 
 ## 使用指南
 
  * 请直接，下载Demo查看，通俗易懂，谢谢。
  
+
+  
  #### 主要功能（A，打印照片），PrintPictureReportActivity，可以直接下载Demo查看，功能查看代码即可。
  
  #### 主要功能（B，跳转,打印自定义文档（报告中图片是SD卡本地文件）），PrintPdfReportLocalImageActivity，自定义文档打印其实是生成pdf文件，然后打印pdf文件，因为比较复杂，这边我详细讲解下具体流程。也可以直接下载Demo，功能查看代码即可。

@@ -360,8 +360,11 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
              * /C_CME/image_01.jpg   这个是我自己本地图片路径,请替换成你自己的,不然会闪退
              * 记得替换成自己的手机本地图片路径
              */
-            mLogoPath = absolutePath + "/C_CME/image_01.jpg";
-            mImagePath = absolutePath + "/C_CME/image_03.png";
+            mLogoPath = absolutePath + "/C_CME/logo.jpg";
+            mImagePath = absolutePath + "/C_CME/001.jpg";
+            Log.e("本地图片地址path===", "absolutePath==" + absolutePath);
+            Log.e("本地图片地址path===", "mLogoPath==" + mLogoPath);
+            Log.e("本地图片地址path===", "mImagePath==" + mImagePath);
 
             float left = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getLeft()), mPageSize);
             float right = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getRight()), mPageSize);
@@ -431,37 +434,9 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
                     try {
                         //手机路径的图片,如果没有自己随便给张图片即可
                         if (mBean.getOrder().equals("1")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/002.jpg";
+                            mImagePath = absolutePath + "/C_CME/001.jpg";
                         }
-                        if (mBean.getOrder().equals("2")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/image_02.png";
-                        }
-                        if (mBean.getOrder().equals("3")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/ffmepg.jpg";
 
-                        }
-                        if (mBean.getOrder().equals("4")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/020a.jpg";
-
-                        }
-                        if (mBean.getOrder().equals("5")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/image_02.png";
-
-                        }
-                        if (mBean.getOrder().equals("6")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/012a.jpg";
-
-                        }
-                        if (mBean.getOrder().equals("7")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/image_02.png";
-
-                        }
-                        if (mBean.getOrder().equals("8")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/002.png";
-                        }
-                        if (mBean.getOrder().equals("9")) { //报告中,第一张图
-                            mImagePath = absolutePath + "/C_CME/020a.jpg";
-                        }
 //                        image2 = new Image(ImageDataFactory.create("http://192.168.67.166:7001/99/001.jpg"));
                         image2 = new Image(ImageDataFactory.create(mImagePath));
                     } catch (MalformedURLException e) {
@@ -856,13 +831,14 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
 
 
     }
+
     private Disposable mDisposable3s;
 
     private void onPrintPdf(String path) {
         PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
         PrintAttributes.Builder builder = new PrintAttributes.Builder();
         builder.setColorMode(PrintAttributes.COLOR_MODE_COLOR);
-        PdfDocumentAdapter    mPdfDocumentAdapter = new PdfDocumentAdapter(this, this.path);
+        PdfDocumentAdapter mPdfDocumentAdapter = new PdfDocumentAdapter(this, this.path);
         PrintJob printReport = printManager.print("PrintReport", mPdfDocumentAdapter, builder.build());
         mPdfDocumentAdapter.setOnPrintStatue(new PdfDocumentAdapter.OnPrintStatueListener() {
             @Override
