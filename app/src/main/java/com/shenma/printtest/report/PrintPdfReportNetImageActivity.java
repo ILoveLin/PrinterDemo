@@ -1,9 +1,13 @@
 package com.shenma.printtest.report;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.print.PrintAttributes;
+import android.print.PrintJob;
 import android.print.PrintManager;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -62,6 +67,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import es.voghdev.pdfviewpager.library.PDFViewPager;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * company：江西神州医疗设备有限公司
@@ -106,6 +113,8 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
     private DeviceRgb title_color;
     private String httpPictureUrl;
     private TextView mFontSetting;
+    private PdfDocumentAdapter mPdfDocumentAdapter;
+    private PrintJob printReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1136,12 +1145,89 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
 
     }
 
+    private Disposable mDisposable3s;
+
+    /**
+     * 开始打印报告
+     *
+     * @param path 生成的pdf文件路径
+     */
     private void onPrintPdf(String path) {
         PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
         PrintAttributes.Builder builder = new PrintAttributes.Builder();
         builder.setColorMode(PrintAttributes.COLOR_MODE_COLOR);
 //        printManager.print("test pdf print", new MyPrintAdapter(this, this.path), builder.build());
-        printManager.print("test pdf print", new PdfDocumentAdapter(this, this.path), builder.build());
+        mPdfDocumentAdapter = new PdfDocumentAdapter(this, this.path);
+        printReport = printManager.print("PrintReport", mPdfDocumentAdapter, builder.build());
+        mPdfDocumentAdapter.setOnPrintStatue(new PdfDocumentAdapter.OnPrintStatueListener() {
+            @Override
+            public void onPrintStatue(boolean statue) {
+                if (printReport.isCancelled()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("打印报告回调======", "====打印被取消了");
+                            Toast.makeText(PrintPdfReportNetImageActivity.this, "打印被取消了", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                }
+                if (printReport.isBlocked()) {
+//                    Toast.makeText(this, "打印被取消了", Toast.LENGTH_LONG).show();
+                    Log.e("打印报告回调======", "====打印机器被锁定了(卡了或者没有纸张了)");
+                    Toast.makeText(PrintPdfReportNetImageActivity.this, "打印机器被锁定了(卡了或者没有纸张了)", Toast.LENGTH_SHORT).show();
+
+
+                }
+
+                if (printReport.isStarted()) {
+                    mDisposable3s = Observable
+                            .interval(3, TimeUnit.SECONDS)//定时器操作符，这里三秒打印一个log
+                            //取消任务时取消定时唤醒
+                            .doOnDispose(() -> {
+
+                            })
+                            .subscribe(count -> {
+                                boolean completed = printReport.isCompleted();//完成的回调
+                                boolean failed = printReport.isFailed();      //失败的回调
+                                if (completed) {
+                                    Log.e("打印报告回调======", "====打印完成");
+                                    Toast.makeText(PrintPdfReportNetImageActivity.this, "打印完成", Toast.LENGTH_SHORT).show();
+
+                                    if (null != mDisposable3s) {
+                                        mDisposable3s.dispose();
+                                        mDisposable3s = null;
+                                    }
+
+                                }
+                                if (failed) {
+                                    Log.e("打印报告回调======", "====打印失败");
+                                    Toast.makeText(PrintPdfReportNetImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
+
+                                    if (null != mDisposable3s) {
+                                        mDisposable3s.dispose();
+                                        mDisposable3s = null;
+                                    }
+
+                                }
+                                if (!completed && count == 40) {  //2分钟还未打印成功,默认打印失败
+                                    Log.e("打印报告回调======", "====打印失败");
+                                    Toast.makeText(PrintPdfReportNetImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
+                                    if (null != mDisposable3s) {
+                                        mDisposable3s.dispose();
+                                        mDisposable3s = null;
+                                    }
+
+                                }
+
+                            });
+
+                }
+
+            }
+
+        });
+
 
     }
 

@@ -10,6 +10,8 @@ import android.print.PrintDocumentAdapter;
 import android.print.PrintDocumentInfo;
 import android.util.Log;
 
+import com.shenma.printtest.util.LogUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,6 +26,7 @@ import java.io.OutputStream;
  * desc：自定义高精度报告适配器,传入PDF文件,打印
  */
 public class PdfDocumentAdapter extends PrintDocumentAdapter {
+    private boolean isOnWrited = false;
 
     Context context = null;
     String pathName = "";
@@ -82,5 +85,38 @@ public class PdfDocumentAdapter extends PrintDocumentAdapter {
 
             }
         }
+    }
+
+
+    /**
+     * 打印报告预览结束
+     */
+    @Override
+    public void onFinish() {
+        super.onFinish();
+        LogUtils.e("TAG" + "PdfDocumentAdapter=====里面======onFinish==" + isOnWrited);
+        if (mOnPrintStatueListener != null) {
+            mOnPrintStatueListener.onPrintStatue(isOnWrited);
+        }
+
+    }
+    /**
+     * 打印报告开始预览
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.e("PdfDocumentAdapter ", "开始打印");
+
+    }
+
+    private OnPrintStatueListener mOnPrintStatueListener;
+
+    public void setOnPrintStatue(OnPrintStatueListener OnPrintStatueListener) {
+        this.mOnPrintStatueListener = OnPrintStatueListener;
+    }
+
+    public interface OnPrintStatueListener {
+        void onPrintStatue(boolean statue);
     }
 }

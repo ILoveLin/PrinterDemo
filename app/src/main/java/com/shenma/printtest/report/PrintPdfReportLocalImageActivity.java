@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.print.PrintAttributes;
+import android.print.PrintJob;
 import android.print.PrintManager;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import es.voghdev.pdfviewpager.library.PDFViewPager;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * company：江西神州医疗设备有限公司
@@ -853,14 +856,82 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
 
 
     }
+    private Disposable mDisposable3s;
 
     private void onPrintPdf(String path) {
         PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
         PrintAttributes.Builder builder = new PrintAttributes.Builder();
         builder.setColorMode(PrintAttributes.COLOR_MODE_COLOR);
-//        printManager.print("test pdf print", new MyPrintAdapter(this, this.path), builder.build());
-        printManager.print("test pdf print", new PdfDocumentAdapter(this, this.path), builder.build());
+        PdfDocumentAdapter    mPdfDocumentAdapter = new PdfDocumentAdapter(this, this.path);
+        PrintJob printReport = printManager.print("PrintReport", mPdfDocumentAdapter, builder.build());
+        mPdfDocumentAdapter.setOnPrintStatue(new PdfDocumentAdapter.OnPrintStatueListener() {
+            @Override
+            public void onPrintStatue(boolean statue) {
+                if (printReport.isCancelled()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("打印报告回调======", "====打印被取消了");
+                            Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印被取消了", Toast.LENGTH_SHORT).show();
 
+                        }
+                    });
+                }
+                if (printReport.isBlocked()) {
+//                    Toast.makeText(this, "打印被取消了", Toast.LENGTH_LONG).show();
+                    Log.e("打印报告回调======", "====打印机器被锁定了(卡了或者没有纸张了)");
+                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印机器被锁定了(卡了或者没有纸张了)", Toast.LENGTH_SHORT).show();
+
+
+                }
+
+                if (printReport.isStarted()) {
+                    mDisposable3s = Observable
+                            .interval(3, TimeUnit.SECONDS)//定时器操作符，这里三秒打印一个log
+                            //取消任务时取消定时唤醒
+                            .doOnDispose(() -> {
+
+                            })
+                            .subscribe(count -> {
+                                boolean completed = printReport.isCompleted();//完成的回调
+                                boolean failed = printReport.isFailed();      //失败的回调
+                                if (completed) {
+                                    Log.e("打印报告回调======", "====打印完成");
+                                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印完成", Toast.LENGTH_SHORT).show();
+
+                                    if (null != mDisposable3s) {
+                                        mDisposable3s.dispose();
+                                        mDisposable3s = null;
+                                    }
+
+                                }
+                                if (failed) {
+                                    Log.e("打印报告回调======", "====打印失败");
+                                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
+
+                                    if (null != mDisposable3s) {
+                                        mDisposable3s.dispose();
+                                        mDisposable3s = null;
+                                    }
+
+                                }
+                                if (!completed && count == 40) {  //2分钟还未打印成功,默认打印失败
+                                    Log.e("打印报告回调======", "====打印失败");
+                                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
+                                    if (null != mDisposable3s) {
+                                        mDisposable3s.dispose();
+                                        mDisposable3s = null;
+                                    }
+
+                                }
+
+                            });
+
+                }
+
+            }
+
+        });
     }
 
     /**

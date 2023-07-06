@@ -43,4 +43,8 @@ dependencies {
 
     //pdf查看 https://github.com/barteksc/AndroidPdfViewer
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.4'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
