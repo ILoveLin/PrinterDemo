@@ -860,50 +860,57 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
 
 
                 }
+                create_pdf.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (printReport.isStarted()) {
+                            Toast.makeText(PrintPdfReportLocalImageActivity.this, "开始打印", Toast.LENGTH_SHORT).show();
 
-                if (printReport.isStarted()) {
-                    mDisposable3s = Observable
-                            .interval(3, TimeUnit.SECONDS)//定时器操作符，这里三秒打印一个log
-                            //取消任务时取消定时唤醒
-                            .doOnDispose(() -> {
+                            mDisposable3s = Observable
+                                    .interval(3, TimeUnit.SECONDS)//定时器操作符，这里三秒打印一个log
+                                    //取消任务时取消定时唤醒
+                                    .doOnDispose(() -> {
 
-                            })
-                            .subscribe(count -> {
-                                boolean completed = printReport.isCompleted();//完成的回调
-                                boolean failed = printReport.isFailed();      //失败的回调
-                                if (completed) {
-                                    Log.e("打印报告回调======", "====打印完成");
-                                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印完成", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .subscribe(count -> {
+                                        boolean completed = printReport.isCompleted();//完成的回调
+                                        boolean failed = printReport.isFailed();      //失败的回调
+                                        if (completed) {
+                                            Log.e("打印报告回调======", "====打印完成");
+                                            Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印完成", Toast.LENGTH_SHORT).show();
 
-                                    if (null != mDisposable3s) {
-                                        mDisposable3s.dispose();
-                                        mDisposable3s = null;
-                                    }
+                                            if (null != mDisposable3s) {
+                                                mDisposable3s.dispose();
+                                                mDisposable3s = null;
+                                            }
 
-                                }
-                                if (failed) {
-                                    Log.e("打印报告回调======", "====打印失败");
-                                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
+                                        }
+                                        if (failed) {
+                                            Log.e("打印报告回调======", "====打印失败");
+                                            Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
 
-                                    if (null != mDisposable3s) {
-                                        mDisposable3s.dispose();
-                                        mDisposable3s = null;
-                                    }
+                                            if (null != mDisposable3s) {
+                                                mDisposable3s.dispose();
+                                                mDisposable3s = null;
+                                            }
 
-                                }
-                                if (!completed && count == 40) {  //2分钟还未打印成功,默认打印失败
-                                    Log.e("打印报告回调======", "====打印失败");
-                                    Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
-                                    if (null != mDisposable3s) {
-                                        mDisposable3s.dispose();
-                                        mDisposable3s = null;
-                                    }
+                                        }
+                                        if (!completed && count == 40) {  //2分钟还未打印成功,默认打印失败
+                                            Log.e("打印报告回调======", "====打印失败");
+                                            Toast.makeText(PrintPdfReportLocalImageActivity.this, "打印失败", Toast.LENGTH_SHORT).show();
+                                            if (null != mDisposable3s) {
+                                                mDisposable3s.dispose();
+                                                mDisposable3s = null;
+                                            }
 
-                                }
+                                        }
 
-                            });
+                                    });
 
-                }
+                        }
+
+                    }
+                },1000);
 
             }
 
