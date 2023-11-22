@@ -731,7 +731,6 @@ public class PrintPdfReportLocalImageActivity extends AppCompatActivity {
      * 动态申请权限
      */
     private void requestPermission() {
-
         XXPermissions.with(this)
                 // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
                 .permission(Permission.MANAGE_EXTERNAL_STORAGE)
