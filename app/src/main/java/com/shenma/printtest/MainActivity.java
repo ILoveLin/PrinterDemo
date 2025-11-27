@@ -1,5 +1,6 @@
 package com.shenma.printtest;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.shenma.printtest.report.PrintPictureReportActivity;
  */
 public class MainActivity extends AppCompatActivity {
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PrintPictureReportActivity.class);
+                startActivity(intent);
+
+            }
+        });
+        findViewById(R.id.tv_test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, TestReportActivity.class);
+//                startActivity(intent);
+
+            }
+        });
+        findViewById(R.id.tv_demo_a4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, com.shenma.printtest.report.PrintDemoA4Activity.class);
                 startActivity(intent);
 
             }

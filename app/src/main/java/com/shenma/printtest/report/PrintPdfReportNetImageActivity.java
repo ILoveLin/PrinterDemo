@@ -84,7 +84,7 @@ import io.reactivex.disposables.Disposable;
  */
 public class PrintPdfReportNetImageActivity extends AppCompatActivity {
     private Button create_pdf;
-    private Button open_pdf, read_image_num, print_report;
+    private Button open_pdf, print_report;
     private String path;
     private Context context;
     private boolean isPermissions = false;
@@ -103,7 +103,6 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
     private ArrayList<LabelBean> mLineList;
     private ArrayList<LabelBean> mTextList;
     private String mFontPath;
-    private EditText edit_num;
     private ArrayList<LabelBean> mImageAreaList;
     private String mLogoPath;
     private Button mSizeA3;
@@ -126,22 +125,36 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         onResponseListener();
     }
 
+    private Button mBtnImage1, mBtnImage2, mBtnImage3, mBtnImage4, mBtnImage5;
+    private Button mBtnImage6, mBtnImage7, mBtnImage8, mBtnImage9;
+    private int mCurrentImageCount = 6; // 默认6张图
+
     private void initView() {
         create_pdf = findViewById(R.id.create_pdf);
         open_pdf = findViewById(R.id.open_pdf);
-        read_image_num = findViewById(R.id.read_image_num);
         pdfView = findViewById(R.id.pdfView);
         print_report = findViewById(R.id.print_report);
-        edit_num = findViewById(R.id.edit_num);
         mFontSetting = findViewById(R.id.set_font_song_ti);
         mSizeA3 = findViewById(R.id.btn_a3);
         mSizeA4 = findViewById(R.id.btn_a4);
         mSizeB5 = findViewById(R.id.btn_b5);
+        
+        // 初始化图片数量按钮
+        mBtnImage1 = findViewById(R.id.btn_image_1);
+        mBtnImage2 = findViewById(R.id.btn_image_2);
+        mBtnImage3 = findViewById(R.id.btn_image_3);
+        mBtnImage4 = findViewById(R.id.btn_image_4);
+        mBtnImage5 = findViewById(R.id.btn_image_5);
+        mBtnImage6 = findViewById(R.id.btn_image_6);
+        mBtnImage7 = findViewById(R.id.btn_image_7);
+        mBtnImage8 = findViewById(R.id.btn_image_8);
+        mBtnImage9 = findViewById(R.id.btn_image_9);
+        
         context = getApplicationContext();
         path = Environment.getExternalStorageDirectory() + "/report_network.pdf";
         mImagePath = Environment.getExternalStorageDirectory() + "/C_CME/001.jpg";
 
-        String str = "请先点击(1:读取图片模板),然后点击(2:A3 A4 B5,纸张类型中的一种),再点击(3:生成PDF文件),最后点击(5:打开PDF文件,或者点击打印报告)";
+        String str = "请先点击(1-9图片数量按钮),然后点击(A3/A4/B5纸张类型),再点击(生成PDF文件),最后点击(打开PDF文件或打印报告)";
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
         byte[] bytes = readStream("STSONG.TTF");
         //读取自定义字体 宋体
@@ -238,24 +251,50 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //打印PDF高精度报告
                 onPrintPdf(path);
-
             }
         });
-        //读取报告中,选中的图片模板   (报告中有几张图,然后会adjustReportLayout()调整--镜检所见: 镜检所见内容  这两个布局的大小)
-        read_image_num.setOnClickListener(new View.OnClickListener() {
+        
+        // 设置图片数量按钮的点击事件
+        View.OnClickListener imageCountClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int imageCount = 0;
+                if (v.getId() == R.id.btn_image_1) imageCount = 1;
+                else if (v.getId() == R.id.btn_image_2) imageCount = 2;
+                else if (v.getId() == R.id.btn_image_3) imageCount = 3;
+                else if (v.getId() == R.id.btn_image_4) imageCount = 4;
+                else if (v.getId() == R.id.btn_image_5) imageCount = 5;
+                else if (v.getId() == R.id.btn_image_6) imageCount = 6;
+                else if (v.getId() == R.id.btn_image_7) imageCount = 7;
+                else if (v.getId() == R.id.btn_image_8) imageCount = 8;
+                else if (v.getId() == R.id.btn_image_9) imageCount = 9;
+                
+                mCurrentImageCount = imageCount;
+                
+                // 自动加载并渲染
                 readReportChooseImageNum();
-
+                
+                Toast.makeText(PrintPdfReportNetImageActivity.this, 
+                    "已选择" + imageCount + "张图片模板", Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+        
+        mBtnImage1.setOnClickListener(imageCountClickListener);
+        mBtnImage2.setOnClickListener(imageCountClickListener);
+        mBtnImage3.setOnClickListener(imageCountClickListener);
+        mBtnImage4.setOnClickListener(imageCountClickListener);
+        mBtnImage5.setOnClickListener(imageCountClickListener);
+        mBtnImage6.setOnClickListener(imageCountClickListener);
+        mBtnImage7.setOnClickListener(imageCountClickListener);
+        mBtnImage8.setOnClickListener(imageCountClickListener);
+        mBtnImage9.setOnClickListener(imageCountClickListener);
     }
 
 
     private void readReportChooseImageNum() {
         try {
             //解析 图像模板(比如5图,输入5)
-            mImageAreaList = readAreaForSAX(edit_num.getText().toString().trim());
+            mImageAreaList = readAreaForSAX(String.valueOf(mCurrentImageCount));
             Toast.makeText(PrintPdfReportNetImageActivity.this, "读取图片模板-完毕", Toast.LENGTH_SHORT).show();
 
             Log.e("readXmlForSAX", "imageAreaList==size==" + mImageAreaList.size());
@@ -279,9 +318,13 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
         int nBottom = 1;
         int nLastBottom = 1;
         int nNum = 0;
-        int vpimage1 = 0;
-        int vpimage2 = 0;
+        int vpimage1 = 0;  // 默认图片区域高度（一图报表.xml中的图像区域高度）
+        int vpimage2 = 0;  // 选中模板的图片区域高度
         int mSeeResultTop = 0;   //镜检诊断: 的top值
+        int mSeeContentOriginalTop = 0;  // 镜检所见内容原始Top值
+        int mSeeContentOriginalBottom = 0;  // 镜检所见内容原始Bottom值
+        int mSeeContentOriginalHeight = 0;  // 镜检所见内容原始高度
+        
         try {
             if (null == mImageAreaList || mRepoerLabelList.size() == 0) {
                 LogUtils.e("调整布局:===adjustReportLayout == 数据加载失败!==mReportLabelList.size() " + mRepoerLabelList.size());
@@ -293,6 +336,7 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
             LogUtils.e("调整布局:===adjustReportLayout == 数据加载失败!==1210");
         }
 
+        // 第一步：获取原始模板中的图像区域高度和镜检所见/诊断的位置信息
         for (int i = 0; i < mRepoerLabelList.size(); i++) {
             LabelBean mBean = mRepoerLabelList.get(i);
             LogUtils.e("调整布局:===镜检所见==mReportLabelList.get(i)===" + mRepoerLabelList.get(i).toString());
@@ -302,18 +346,24 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
                 nNum = i;
                 vpimage1 = Integer.parseInt(mBean.getBottom()) - Integer.parseInt(mBean.getTop());
             }
+            
+            // 获取镜检所见内容的原始位置
+            if (mBean.getContent().equals("镜检所见") && mBean.getType().equals("Edit")) {
+                mSeeContentOriginalTop = Integer.parseInt(mBean.getTop());
+                mSeeContentOriginalBottom = Integer.parseInt(mBean.getBottom());
+                mSeeContentOriginalHeight = mSeeContentOriginalBottom - mSeeContentOriginalTop;
+            }
+            
             //这里是为了获取 镜检诊断: 标题的Top值
             if (mBean.getContent().equals("镜检诊断：") && mBean.getOrder().equals("47")) {
                 //当前 label 列表中(升序)   图像区域对应的角标
                 mSeeResultTop = Integer.parseInt(mBean.getTop()) - 2;
-
-                break;
             }
-
-
         }
 
-        //接下来是图像区域
+        // 第二步：计算选中模板的图像区域高度
+        int maxImageBottom = 0;
+        int minImageTop = Integer.MAX_VALUE;
         for (int i = 0; i < mImageAreaList.size(); i++) {
             LabelBean mBean = mImageAreaList.get(i);
             int mNewBottom = (Integer.parseInt(mBean.getBottom()) + nBottom);
@@ -321,18 +371,35 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
             mBean.setTop(mNewTop + "");
             mBean.setBottom(mNewBottom + "");
             nLastBottom = mNewBottom;
-            if (mBean.getType().equals("Image")) {
-                vpimage2 = mNewBottom - mNewTop;
+            
+            // 找到所有图像元素的最大Bottom和最小Top，计算实际图像区域高度
+            if (mBean.getType().equals("Image") || mBean.getType().equals("imgRect") || 
+                mBean.getType().equals("ImageDesc") || mBean.getType().equals("ImageSketch")) {
+                if (mNewBottom > maxImageBottom) {
+                    maxImageBottom = mNewBottom;
+                }
+                if (mNewTop < minImageTop) {
+                    minImageTop = mNewTop;
+                }
             }
-
         }
-        //图像区域以下的 项目
+        
+        // 计算选中模板的实际图像区域高度
+        vpimage2 = maxImageBottom - minImageTop;
+        
+        LogUtils.e("调整布局:===vpimage1(默认图像高度)=" + vpimage1);
+        LogUtils.e("调整布局:===vpimage2(选中模板图像高度)=" + vpimage2);
+        LogUtils.e("调整布局:===镜检所见原始高度=" + mSeeContentOriginalHeight);
+
+        // 第三步：调整图像区域以下的项目
         int t = 0;
         int tF = 0;
         int tz = 10;
-        int mData = 0;
-        int mTop = 0;
         int mBottom = 0;
+        
+        // 图像高度差值
+        int heightDiff = vpimage2 - vpimage1;
+        
         ////nNum 代表图片区域的:角标
         for (int i = nNum + 1; i < mRepoerLabelList.size(); i++) {
             LabelBean mBean = mRepoerLabelList.get(i);
@@ -341,43 +408,59 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
             String order = mBean.getOrder();
             String type = mBean.getType();
             String content = mBean.getContent();
+            
             if (i == nNum + 1) {
                 //vpimage2 	加载图片模板之后:图片区域高度	vpimage1默认图片区域高度
                 t = vpimage2 - vpimage1;// t其实是差值
                 nBottom = (nLastBottom - top) - t;
             }
+            
             //调整分界线的位置
             if (order.equals("7") && tF == 0) {
                 Log.e("调整layout布局", "mBean====" + mBean.toString());
                 tF = 1;
                 mBean.setTop((top + nBottom + t + tz) + "");
                 mBean.setBottom((bottom + nBottom + t + tz) + "");
-
-
                 Log.e("调整layout布局", "mBean==后==" + mBean.toString());
-
             }
 
-            //调整镜检所见的位置
+            //调整分界线（图像区域下方的第一条分界线）
+            if (order.equals("7") && content.equals("分界线") && top > 400 && tF == 0) {
+                tF = 1;
+                // 这条分界线已经在前面调整过了，跳过
+                continue;
+            }
+            
+            //调整镜检所见标题的位置
             if (order.equals("46") && type.equals("Caption")) {
                 mBean.setTop((top + nBottom + t + tz) + "");
                 mBean.setBottom((bottom + nBottom + t + tz) + "");
                 mBottom = Integer.parseInt((bottom + nBottom + t + tz) + "") + 1;
-
+                LogUtils.e("调整布局:===镜检所见标题 newTop=" + mBean.getTop() + ", newBottom=" + mBean.getBottom());
             }
-
-//            //调整镜检所见--内容的位置
-            if (order.equals("46") && content.equals("镜检所见")) {
-                //原本的高度
-                mBean.setTop(mBottom + "");  //这个是对的
-                mBean.setBottom((mSeeResultTop) + "");     //这个不对
-
-
+            //调整镜检所见--内容的位置和高度
+            else if (order.equals("46") && content.equals("镜检所见")) {
+                // 新的Top位置
+                int newTop = mBottom;
+                // 新的Bottom位置 = 镜检诊断标题的Top - 2
+                int newBottom = mSeeResultTop + heightDiff;
+                
+                mBean.setTop(newTop + "");
+                mBean.setBottom(newBottom + "");
+                
+                LogUtils.e("调整布局:===镜检所见内容 newTop=" + newTop + ", newBottom=" + newBottom + ", 新高度=" + (newBottom - newTop));
             }
-
+            //调整镜检诊断及之后的所有元素（根据Top位置判断，而不是order）
+            // 镜检诊断的原始Top是832，所有Top >= 832的元素都需要调整
+            else if (top >= 832) {
+                // 对于镜检诊断及之后的所有元素，统一按照高度差值进行调整
+                int newTop = top + heightDiff;
+                int newBottom = bottom + heightDiff;
+                mBean.setTop(newTop + "");
+                mBean.setBottom(newBottom + "");
+                LogUtils.e("调整布局:===调整元素[" + content + "] order=" + order + " type=" + type + " originalTop=" + top + " newTop=" + newTop + ", newBottom=" + newBottom);
+            }
         }
-
-
     }
 
     private void createReportPDF(String path, ArrayList<LabelBean> labelBeansList, PageSize mPageSize) {
@@ -819,6 +902,12 @@ public class PrintPdfReportNetImageActivity extends AppCompatActivity {
     }
 
     private void DrawTextLayout(LabelBean mBean, String type) {
+        // 过滤掉"年龄单位"类型的元素，因为它和"岁"在同一个位置
+        if (mBean.getType().equals("年龄单位") || mBean.getContent().equals("年龄单位")) {
+            Log.e("mBean", "跳过年龄单位元素: " + mBean.toString());
+            return;
+        }
+        
         Log.e("mBean", "mBean=" + mBean.toString());
         float left = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getLeft()), mPageSize);
         float right = CommonUtils.getScaleLeft2Right(Float.parseFloat(mBean.getRight()), mPageSize);

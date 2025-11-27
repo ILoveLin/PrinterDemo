@@ -43,6 +43,27 @@
             android:text="跳转,打印照片"
             android:textColor="@color/white"
             android:textSize="18sp" />
+        <TextView
+            android:id="@+id/tv_test"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/blue"
+            android:gravity="center"
+            android:text="跳转,测试"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+        
+        <TextView
+            android:id="@+id/tv_demo_a4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/blue"
+            android:gravity="center"
+            android:text="跳转,自定义View渲染A4医用报告"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
     </LinearLayout>
 

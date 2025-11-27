@@ -38,34 +38,103 @@
                 android:text="生成PDF文件" />
 
 
-            <EditText
-                android:id="@+id/edit_num"
-                android:layout_width="20dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerInParent="true"
-                android:layout_marginLeft="5dp"
-                android:hint="输入"
-                android:text="6"
-                android:textSize="15dp" />
-
-            <Button
-                android:id="@+id/read_image_num"
+            <LinearLayout
+                android:id="@+id/image_count_buttons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/edit_num"
-                android:text="读取图片模板" />
+                android:orientation="horizontal">
 
+                <Button
+                    android:id="@+id/btn_image_1"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="1"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_2"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="2"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_3"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="3"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_4"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="4"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_5"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="5"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_6"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="6"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_7"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="7"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_8"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="8"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_9"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:padding="0dp"
+                    android:text="9"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/print_report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/read_image_num"
+                android:layout_toRightOf="@+id/image_count_buttons"
                 android:text="打印报告" />
         </RelativeLayout>
 

@@ -1,17 +1,27 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        mavenCentral()
-        maven {url 'https://maven.aliyun.com/repository/google/'}
-        maven {url 'https://maven.aliyun.com/repository/public/'}
+        gradlePluginPortal()
         // 阿里云云效仓库（Gradle 插件）：https://maven.aliyun.com/mvn/guide
-        maven {url 'https://maven.aliyun.com/repository/gradle-plugin/'}
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        // 阿里云云效仓库：https://maven.aliyun.com/mvn/guide
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        // 华为开源镜像：https://mirrors.huaweicloud.com
+        maven { url 'https://repo.huaweicloud.com/repository/maven' }
+        maven { url 'https://developer.huawei.com/repo/' }//华为扫码
+        // JitPack 远程仓库：https://jitpack.io
         maven { url 'https://jitpack.io' }
+        // MavenCentral 远程仓库：https://mvnrepository.com
+        mavenCentral()
+        // Google 仓库：https://maven.google.com/web/index.html
+        google()
+        // noinspection JcenterRepositoryObsolete
+        jcenter()
 
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.0"
-
+        classpath "com.android.tools.build:gradle:8.4.2"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -19,6 +29,7 @@ buildscript {
 
 allprojects {
     repositories {
+        google()  // 添加Google官方仓库，必须放在最前面
         mavenCentral()
         maven {url 'https://maven.aliyun.com/repository/google/'}
         maven {url 'https://maven.aliyun.com/repository/public/'}

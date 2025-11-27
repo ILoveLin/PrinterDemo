@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <!-- 顶部标题栏 -->
+    <LinearLayout
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#2196F3"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="←"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="A4医用报告打印"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+    </LinearLayout>
+
+    <!-- 控制面板 -->
+    <LinearLayout
+        android:id="@+id/control_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_bar"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 纸张大小选择 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="纸张大小："
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_paper_a4"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="A4"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_paper_a5"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="A5"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="(A4: 210×297mm, A5: 148×210mm)"
+                android:textColor="#999999"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="图片数量："
+                android:textColor="#333333"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_image_1"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="1"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_2"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="2"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_3"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="3"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_4"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="4"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_5"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="5"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_6"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="6"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_7"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="7"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_8"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="2dp"
+                    android:padding="0dp"
+                    android:text="8"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_image_9"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:padding="0dp"
+                    android:text="9"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btn_print"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="#FF9800"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="打印报告"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="提示：点击1-9按钮选择图片数量，自动加载报告"
+            android:textColor="#999999"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- 报告预览区域 - 支持双向滚动 -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/control_panel"
+        android:layout_marginTop="8dp"
+        android:fillViewport="true">
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <com.shenma.printtest.widget.MedicalReportView
+                    android:id="@+id/medical_report_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:elevation="2dp" />
+            </FrameLayout>
+        </ScrollView>
+    </HorizontalScrollView>
+
+</RelativeLayout>
