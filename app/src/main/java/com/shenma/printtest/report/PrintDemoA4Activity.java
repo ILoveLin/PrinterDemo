@@ -50,7 +50,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private String[] mImageUrls = {
         "https://www.szcme.com/assets/image/与KMT合照.jpg",
         "https://www.szcme.com/assets/image/与客户合照.jpg",
-        "https://www.szcme.com/assets/image/与KMT合照.jpg",
+        "https://www.szcme.com/assets/image1/与KMT合照.jpg",
         "https://www.szcme.com/assets/image/与客户合照2.jpg",
         "https://www.szcme.com/assets/image/与KMT合照.jpg",
         "https://www.szcme.com/assets/image/2.png",
@@ -472,6 +472,9 @@ public class PrintDemoA4Activity extends AppCompatActivity {
      * 加载图片
      */
     private void loadImages(int imageCount) {
+        // 先清除旧图片缓存，防止OOM
+        mReportView.clearImageCache();
+        
         for (int i = 0; i < imageCount && i < mImageUrls.length; i++) {
             String order = String.valueOf(i + 1);
             mReportView.setImageUrl(order, mImageUrls[i]);

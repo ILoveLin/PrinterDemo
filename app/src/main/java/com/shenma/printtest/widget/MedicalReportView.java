@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -27,6 +28,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * 自定义医用报告View
@@ -61,6 +65,22 @@ public class MedicalReportView extends View {
     
     private int mViewWidth;
     private int mViewHeight;
+    
+    // 用于取消过期的图片加载任务
+    private volatile int mLoadVersion = 0;
+    
+    // 线程池，限制并发数量
+    private ExecutorService mExecutor;
+    private List<Future<?>> mPendingTasks = new ArrayList<>();
+    
+    // 图片下载进度 (0-100, -1表示失败)
+    private Map<String, Integer> mImageProgress = new HashMap<>();
+    
+    // 水波动画偏移量
+    private float mWaveOffset = 0f;
+    
+    // 进度状态常量
+    private static final int PROGRESS_FAILED = -1;
 
     public MedicalReportView(Context context) {
         super(context);
@@ -109,18 +129,75 @@ public class MedicalReportView extends View {
      * 设置图片数据
      */
     public void setImageUrl(String order, String imageUrl) {
-        // 异步加载图片
-        new Thread(() -> {
+        final int currentVersion = mLoadVersion;
+        
+        // 初始化进度为0
+        synchronized (mImageProgress) {
+            mImageProgress.put(order, 0);
+        }
+        
+        // 确保线程池已创建
+        if (mExecutor == null || mExecutor.isShutdown()) {
+            mExecutor = Executors.newFixedThreadPool(9); // 最多9个并发下载
+        }
+        
+        // 提交任务到线程池
+        Future<?> task = mExecutor.submit(() -> {
             try {
-                Bitmap bitmap = loadImageFromUrl(imageUrl);
+                // 检查是否已被取消（切换了模板）
+                if (currentVersion != mLoadVersion) {
+                    Log.d(TAG, "图片加载已取消(版本过期): " + order);
+                    return;
+                }
+                
+                Bitmap bitmap = loadImageFromUrlWithProgress(imageUrl, currentVersion, order);
+                
+                // 再次检查是否已被取消
+                if (currentVersion != mLoadVersion) {
+                    if (bitmap != null && !bitmap.isRecycled()) {
+                        bitmap.recycle();
+                    }
+                    Log.d(TAG, "图片加载已取消(版本过期): " + order);
+                    return;
+                }
+                
                 if (bitmap != null) {
-                    mImageCache.put(order, bitmap);
+                    synchronized (mImageCache) {
+                        // 回收旧图片
+                        Bitmap existing = mImageCache.put(order, bitmap);
+                        if (existing != null && !existing.isRecycled()) {
+                            existing.recycle();
+                        }
+                    }
+                    // 移除进度记录
+                    synchronized (mImageProgress) {
+                        mImageProgress.remove(order);
+                    }
                     postInvalidate();
+                } else {
+                    // 加载失败，设置失败状态
+                    if (currentVersion == mLoadVersion) {
+                        synchronized (mImageProgress) {
+                            mImageProgress.put(order, PROGRESS_FAILED);
+                        }
+                        postInvalidate();
+                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "加载图片失败: " + imageUrl, e);
+                // 异常时也设置失败状态
+                if (currentVersion == mLoadVersion) {
+                    synchronized (mImageProgress) {
+                        mImageProgress.put(order, PROGRESS_FAILED);
+                    }
+                    postInvalidate();
+                }
             }
-        }).start();
+        });
+        
+        synchronized (mPendingTasks) {
+            mPendingTasks.add(task);
+        }
     }
 
     /**
@@ -390,18 +467,148 @@ public class MedicalReportView extends View {
             RectF destRect = new RectF(left, top, right, bottom);
             canvas.drawBitmap(bitmap, null, destRect, mImagePaint);
         } else {
-            // 绘制占位框
-            Paint placeholderPaint = new Paint();
-            placeholderPaint.setColor(Color.LTGRAY);
-            placeholderPaint.setStyle(Paint.Style.FILL);
-            canvas.drawRect(left, top, right, bottom, placeholderPaint);
+            // 获取当前进度
+            int progress = 0;
+            synchronized (mImageProgress) {
+                Integer p = mImageProgress.get(order);
+                if (p != null) progress = p;
+            }
             
-            // 绘制边框
-            Paint borderPaint = new Paint();
-            borderPaint.setColor(Color.GRAY);
-            borderPaint.setStyle(Paint.Style.STROKE);
-            borderPaint.setStrokeWidth(2f);
-            canvas.drawRect(left, top, right, bottom, borderPaint);
+            if (progress == PROGRESS_FAILED) {
+                // 绘制加载失败占位图
+                drawFailedPlaceholder(canvas, left, top, right, bottom);
+            } else {
+                // 绘制加载中占位图（带水波进度）
+                drawWaveLoadingPlaceholder(canvas, left, top, right, bottom, progress);
+            }
+        }
+    }
+
+    /**
+     * 绘制加载失败占位图
+     */
+    private void drawFailedPlaceholder(Canvas canvas, float left, float top, float right, float bottom) {
+        // 绘制浅红色背景
+        Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bgPaint.setColor(Color.parseColor("#FFF5F5"));
+        bgPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(left, top, right, bottom, bgPaint);
+        
+        // 绘制边框
+        Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        borderPaint.setColor(Color.parseColor("#FFCCCC"));
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(1f);
+        canvas.drawRect(left, top, right, bottom, borderPaint);
+        
+        float centerX = (left + right) / 2;
+        float centerY = (top + bottom) / 2;
+        
+        // 计算圆的半径
+        float radius = Math.min(right - left, bottom - top) / 5;
+        if (radius > 30) radius = 30;
+        if (radius < 10) radius = 10;
+        
+        // 绘制红色圆形边框
+        Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        circlePaint.setColor(Color.parseColor("#FF6B6B"));
+        circlePaint.setStyle(Paint.Style.STROKE);
+        circlePaint.setStrokeWidth(2f);
+        canvas.drawCircle(centerX, centerY, radius, circlePaint);
+        
+        // 绘制X号（表示失败）
+        Paint xPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        xPaint.setColor(Color.parseColor("#FF6B6B"));
+        xPaint.setStrokeWidth(2f);
+        xPaint.setStrokeCap(Paint.Cap.ROUND);
+        float xSize = radius * 0.5f;
+        canvas.drawLine(centerX - xSize, centerY - xSize, centerX + xSize, centerY + xSize, xPaint);
+        canvas.drawLine(centerX + xSize, centerY - xSize, centerX - xSize, centerY + xSize, xPaint);
+    }
+
+    /**
+     * 绘制带水波进度的加载占位图
+     */
+    private void drawWaveLoadingPlaceholder(Canvas canvas, float left, float top, float right, float bottom, int progress) {
+        // 绘制浅灰色背景
+        Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bgPaint.setColor(Color.parseColor("#F5F5F5"));
+        bgPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(left, top, right, bottom, bgPaint);
+        
+        // 绘制边框
+        Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        borderPaint.setColor(Color.parseColor("#E0E0E0"));
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(1f);
+        canvas.drawRect(left, top, right, bottom, borderPaint);
+        
+        float centerX = (left + right) / 2;
+        float centerY = (top + bottom) / 2;
+        
+        // 计算圆的半径
+        float radius = Math.min(right - left, bottom - top) / 5;
+        if (radius > 30) radius = 30;
+        if (radius < 10) radius = 10;
+        
+        // 绘制圆形边框
+        Paint circleBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        circleBorderPaint.setColor(Color.parseColor("#4A90D9"));
+        circleBorderPaint.setStyle(Paint.Style.STROKE);
+        circleBorderPaint.setStrokeWidth(2f);
+        canvas.drawCircle(centerX, centerY, radius, circleBorderPaint);
+        
+        // 绘制水波填充
+        if (progress > 0) {
+            canvas.save();
+            
+            // 裁剪为圆形区域
+            Path clipPath = new Path();
+            clipPath.addCircle(centerX, centerY, radius - 1, Path.Direction.CW);
+            canvas.clipPath(clipPath);
+            
+            // 计算水位高度（从底部上升）
+            float waterHeight = (radius * 2) * progress / 100f;
+            float waterTop = centerY + radius - waterHeight;
+            
+            // 绘制贝塞尔曲线水波
+            Path wavePath = new Path();
+            float waveHeight = radius / 6; // 波浪高度
+            float waveLength = radius;     // 波浪长度
+            
+            // 起点在左边
+            wavePath.moveTo(centerX - radius - waveLength, waterTop);
+            
+            // 绘制多个波浪
+            float x = centerX - radius - waveLength + mWaveOffset;
+            while (x < centerX + radius + waveLength) {
+                // 贝塞尔曲线绘制波浪
+                wavePath.quadTo(x + waveLength / 4, waterTop - waveHeight,
+                               x + waveLength / 2, waterTop);
+                wavePath.quadTo(x + waveLength * 3 / 4, waterTop + waveHeight,
+                               x + waveLength, waterTop);
+                x += waveLength;
+            }
+            
+            // 封闭路径（填充到底部）
+            wavePath.lineTo(centerX + radius + waveLength, centerY + radius);
+            wavePath.lineTo(centerX - radius - waveLength, centerY + radius);
+            wavePath.close();
+            
+            // 填充水波
+            Paint wavePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            wavePaint.setColor(Color.parseColor("#4A90D9"));
+            wavePaint.setStyle(Paint.Style.FILL);
+            wavePaint.setAlpha(180);
+            canvas.drawPath(wavePath, wavePaint);
+            
+            canvas.restore();
+        }
+        
+        // 更新波浪偏移量（动画效果）
+        mWaveOffset += 1f;
+        if (mWaveOffset > 60) {
+            mWaveOffset = 0;
         }
     }
 
@@ -525,19 +732,76 @@ public class MedicalReportView extends View {
     }
 
     /**
-     * 从URL加载图片
+     * 从URL加载图片（带进度回调）
      */
-    private Bitmap loadImageFromUrl(String imageUrl) {
+    private Bitmap loadImageFromUrlWithProgress(String imageUrl, int loadVersion, String order) {
+        HttpURLConnection connection = null;
+        InputStream input = null;
+        java.io.ByteArrayOutputStream baos = null;
         try {
+            // 加载前检查是否已取消
+            if (loadVersion != mLoadVersion) {
+                return null;
+            }
+            
             URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(10000);
             connection.connect();
-            InputStream input = connection.getInputStream();
-            return BitmapFactory.decodeStream(input);
+            
+            // 连接后再次检查
+            if (loadVersion != mLoadVersion) {
+                return null;
+            }
+            
+            int contentLength = connection.getContentLength();
+            input = connection.getInputStream();
+            baos = new java.io.ByteArrayOutputStream();
+            
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            int totalBytesRead = 0;
+            
+            while ((bytesRead = input.read(buffer)) != -1) {
+                // 检查是否已取消
+                if (loadVersion != mLoadVersion) {
+                    return null;
+                }
+                
+                baos.write(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+                
+                // 更新进度
+                if (contentLength > 0) {
+                    int progress = (int) ((totalBytesRead * 100L) / contentLength);
+                    synchronized (mImageProgress) {
+                        mImageProgress.put(order, progress);
+                    }
+                    postInvalidate();
+                }
+            }
+            
+            // 设置进度为100
+            synchronized (mImageProgress) {
+                mImageProgress.put(order, 100);
+            }
+            postInvalidate();
+            
+            byte[] imageData = baos.toByteArray();
+            return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
         } catch (Exception e) {
-            Log.e(TAG, "加载图片失败", e);
+            if (loadVersion == mLoadVersion) {
+                Log.e(TAG, "加载图片失败", e);
+            }
             return null;
+        } finally {
+            try {
+                if (baos != null) baos.close();
+                if (input != null) input.close();
+                if (connection != null) connection.disconnect();
+            } catch (Exception ignored) {}
         }
     }
 
@@ -545,11 +809,40 @@ public class MedicalReportView extends View {
      * 清除图片缓存
      */
     public void clearImageCache() {
-        for (Bitmap bitmap : mImageCache.values()) {
-            if (bitmap != null && !bitmap.isRecycled()) {
-                bitmap.recycle();
+        // 增加版本号，取消所有正在进行的加载任务
+        mLoadVersion++;
+        
+        // 取消所有待执行的任务
+        synchronized (mPendingTasks) {
+            for (Future<?> task : mPendingTasks) {
+                if (!task.isDone()) {
+                    task.cancel(true);
+                }
             }
+            mPendingTasks.clear();
         }
-        mImageCache.clear();
+        
+        // 关闭旧线程池，立即创建新的
+        if (mExecutor != null) {
+            mExecutor.shutdownNow();
+            mExecutor = null;
+        }
+        
+        synchronized (mImageCache) {
+            for (Bitmap bitmap : mImageCache.values()) {
+                if (bitmap != null && !bitmap.isRecycled()) {
+                    bitmap.recycle();
+                }
+            }
+            mImageCache.clear();
+        }
+        
+        // 清除进度记录
+        synchronized (mImageProgress) {
+            mImageProgress.clear();
+        }
+        
+        // 重置波浪偏移
+        mWaveOffset = 0;
     }
 }
