@@ -29,7 +29,14 @@ import javax.xml.parsers.SAXParserFactory;
 
 /**
  * A4医用报告打印演示Activity
+ *
  * 使用自定义View渲染医用报告
+ *
+ *  强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
+ *  强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
+ *  强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
+ *
+ *
  */
 public class PrintDemoA4Activity extends AppCompatActivity {
     private static final String TAG = "PrintDemoA4Activity";
@@ -50,7 +57,8 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private String[] mImageUrls = {
         "https://www.szcme.com/assets/image/与KMT合照.jpg",
         "https://www.szcme.com/assets/image/与客户合照.jpg",
-        "https://www.szcme.com/assets/image1/与KMT合照.jpg",
+        "https://www.szcme.com/assets/image1/与KMT合照.jpg", //故意是指错误地址，查看加载失败的效果
+//        "https://www.szcme.com/assets/image/与KMT合照.jpg",
         "https://www.szcme.com/assets/image/与客户合照2.jpg",
         "https://www.szcme.com/assets/image/与KMT合照.jpg",
         "https://www.szcme.com/assets/image/2.png",

@@ -15,7 +15,9 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -81,6 +83,9 @@ public class MedicalReportView extends View {
     
     // 进度状态常量
     private static final int PROGRESS_FAILED = -1;
+    
+    // 图片区域位置缓存（用于点击检测）
+    private Map<String, RectF> mImageRects = new HashMap<>();
 
     public MedicalReportView(Context context) {
         super(context);
@@ -138,7 +143,7 @@ public class MedicalReportView extends View {
         
         // 确保线程池已创建
         if (mExecutor == null || mExecutor.isShutdown()) {
-            mExecutor = Executors.newFixedThreadPool(9); // 最多9个并发下载
+            mExecutor = Executors.newFixedThreadPool(18); // 最多9个并发下载
         }
         
         // 提交任务到线程池
@@ -462,6 +467,11 @@ public class MedicalReportView extends View {
         
         String order = label.getOrder();
         Bitmap bitmap = mImageCache.get(order);
+        
+        // 保存图片区域位置（缩放后的实际屏幕坐标）
+        RectF screenRect = new RectF(left * mScaleRatio, top * mScaleRatio, 
+                                      right * mScaleRatio, bottom * mScaleRatio);
+        mImageRects.put(order, screenRect);
         
         if (bitmap != null) {
             RectF destRect = new RectF(left, top, right, bottom);
@@ -805,6 +815,102 @@ public class MedicalReportView extends View {
         }
     }
 
+    // 记录按下时的坐标，用于判断是否是点击
+    private float mDownX, mDownY;
+    private static final int CLICK_THRESHOLD = 20; // 点击阈值（像素）
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mDownX = event.getX();
+                mDownY = event.getY();
+                // 检查是否点击在图片区域内
+                for (Map.Entry<String, RectF> entry : mImageRects.entrySet()) {
+                    RectF rect = entry.getValue();
+                    if (rect.contains(mDownX, mDownY)) {
+                        // 请求父View不要拦截触摸事件
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        return true;
+                    }
+                }
+                break;
+                
+            case MotionEvent.ACTION_UP:
+                float x = event.getX();
+                float y = event.getY();
+                // 判断是否是点击（移动距离小于阈值）
+                if (Math.abs(x - mDownX) < CLICK_THRESHOLD && Math.abs(y - mDownY) < CLICK_THRESHOLD) {
+                    // 检测点击的是哪张图片
+                    for (Map.Entry<String, RectF> entry : mImageRects.entrySet()) {
+                        RectF rect = entry.getValue();
+                        if (rect.contains(x, y)) {
+                            String order = entry.getKey();
+                            Bitmap bitmap = mImageCache.get(order);
+                            if (bitmap != null && !bitmap.isRecycled()) {
+                                // 显示图片查看器
+                                showImageViewer(bitmap);
+                                return true;
+                            } else {
+                                // 检查是否是加载失败的图片
+                                Integer progress = mImageProgress.get(order);
+                                if (progress != null && progress == PROGRESS_FAILED) {
+                                    // 显示加载失败提示
+                                    Toast.makeText(getContext(), "图片加载失败，无法查看", Toast.LENGTH_SHORT).show();
+                                } else if (progress != null && progress >= 0 && progress < 100) {
+                                    // 正在加载中
+                                    Toast.makeText(getContext(), "图片加载中，请稍候...", Toast.LENGTH_SHORT).show();
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+                break;
+                
+            case MotionEvent.ACTION_CANCEL:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+    
+    /**
+     * 显示图片查看器
+     */
+    private void showImageViewer(Bitmap clickedBitmap) {
+        // 收集所有加载成功的图片
+        ArrayList<Bitmap> loadedImages = new ArrayList<>();
+        ArrayList<String> imageOrders = new ArrayList<>();
+        
+        // 按order排序获取所有已加载的图片
+        for (Map.Entry<String, Bitmap> entry : mImageCache.entrySet()) {
+            String order = entry.getKey();
+            Bitmap bitmap = entry.getValue();
+            if (bitmap != null && !bitmap.isRecycled() && !order.startsWith("sketch_") && !order.equals("logo")) {
+                imageOrders.add(order);
+            }
+        }
+        
+        // 排序
+        java.util.Collections.sort(imageOrders);
+        
+        // 按排序后的顺序添加图片
+        int currentIndex = 0;
+        for (int i = 0; i < imageOrders.size(); i++) {
+            String order = imageOrders.get(i);
+            Bitmap bitmap = mImageCache.get(order);
+            if (bitmap != null) {
+                loadedImages.add(bitmap);
+                if (bitmap == clickedBitmap) {
+                    currentIndex = i;
+                }
+            }
+        }
+        
+        ImageViewerDialog dialog = new ImageViewerDialog(getContext(), loadedImages, currentIndex);
+        dialog.show();
+    }
+    
     /**
      * 清除图片缓存
      */
@@ -841,6 +947,9 @@ public class MedicalReportView extends View {
         synchronized (mImageProgress) {
             mImageProgress.clear();
         }
+        
+        // 清除图片区域位置缓存
+        mImageRects.clear();
         
         // 重置波浪偏移
         mWaveOffset = 0;

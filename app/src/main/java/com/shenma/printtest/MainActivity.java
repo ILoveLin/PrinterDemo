@@ -24,38 +24,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.tv_pdf).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PrintPdfReportLocalImageActivity.class);
-                startActivity(intent);
-
-            }
-        });
-        findViewById(R.id.tv_pdf_online).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PrintPdfReportNetImageActivity.class);
-                startActivity(intent);
-
-            }
-        });
-        findViewById(R.id.tv_picture).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PrintPictureReportActivity.class);
-                startActivity(intent);
-
-            }
-        });
-        findViewById(R.id.tv_test).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, TestReportActivity.class);
+        //打印照片，打印自定义PDF文档，等等方式。虽然能满足需求，但是我已经不推荐了，因为有更好的推荐，请使用MedicalReportView，自定义View打印即可，高效，高清晰度，健壮性更强
+        //打印照片，打印自定义PDF文档，等等方式。虽然能满足需求，但是我已经不推荐了，因为有更好的推荐，请使用MedicalReportView，自定义View打印即可，高效，高清晰度，健壮性更强
+        //打印照片，打印自定义PDF文档，等等方式。虽然能满足需求，但是我已经不推荐了，因为有更好的推荐，请使用MedicalReportView，自定义View打印即可，高效，高清晰度，健壮性更强
+        //打印照片，打印自定义PDF文档，等等方式。虽然能满足需求，但是我已经不推荐了，因为有更好的推荐，请使用MedicalReportView，自定义View打印即可，高效，高清晰度，健壮性更强
+//        findViewById(R.id.tv_pdf).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, PrintPdfReportLocalImageActivity.class);
 //                startActivity(intent);
-
-            }
-        });
+//
+//            }
+//        });
+//        findViewById(R.id.tv_pdf_online).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, PrintPdfReportNetImageActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
+//        findViewById(R.id.tv_picture).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, PrintPictureReportActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
+//        findViewById(R.id.tv_test).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                Intent intent = new Intent(MainActivity.this, TestReportActivity.class);
+////                startActivity(intent);
+//
+//            }
+//        });
         findViewById(R.id.tv_demo_a4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
