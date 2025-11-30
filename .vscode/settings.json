@@ -1,0 +1,8 @@
+{
+    "kiroAgent.configureMCP": "Disabled",
+    "files.encoding": "utf8",
+    "files.autoGuessEncoding": false,
+    "[properties]": {
+        "files.encoding": "utf8"
+    }
+}

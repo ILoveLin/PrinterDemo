@@ -1,24 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        gradlePluginPortal()
-        // 阿里云云效仓库（Gradle 插件）：https://maven.aliyun.com/mvn/guide
+        // 国内镜像优先
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        // 阿里云云效仓库：https://maven.aliyun.com/mvn/guide
-        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google' }
-        // 华为开源镜像：https://mirrors.huaweicloud.com
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://repo.huaweicloud.com/repository/maven' }
-        maven { url 'https://developer.huawei.com/repo/' }//华为扫码
-        // JitPack 远程仓库：https://jitpack.io
+        maven { url 'https://developer.huawei.com/repo/' }
         maven { url 'https://jitpack.io' }
-        // MavenCentral 远程仓库：https://mvnrepository.com
+        // 如果国内镜像找不到，最后才尝试官方仓库
+        // gradlePluginPortal()
         mavenCentral()
-        // Google 仓库：https://maven.google.com/web/index.html
-        google()
-        // noinspection JcenterRepositoryObsolete
-        jcenter()
-
+        // google()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:8.4.2"
@@ -29,14 +23,17 @@ buildscript {
 
 allprojects {
     repositories {
-        google()  // 添加Google官方仓库，必须放在最前面
-        mavenCentral()
-        maven {url 'https://maven.aliyun.com/repository/google/'}
-        maven {url 'https://maven.aliyun.com/repository/public/'}
-        // 阿里云云效仓库（Gradle 插件）：https://maven.aliyun.com/mvn/guide
-        maven {url 'https://maven.aliyun.com/repository/gradle-plugin/'}
+        // 国内镜像优先，避免访问 Google 服务器
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+        maven { url 'https://maven.aliyun.com/repository/central/' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
         maven { url 'https://jitpack.io' }
-
+        // 如果国内镜像找不到，最后才尝试官方仓库（可能需要代理）
+        mavenCentral()
+        // google()
+        // mavenCentral()
     }
 }
 

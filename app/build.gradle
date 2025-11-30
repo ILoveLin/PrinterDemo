@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 35
-    buildToolsVersion "34.0.0"
+    compileSdk 34
     namespace 'com.shenma.printtest'
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 35
+        minSdk 24
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
