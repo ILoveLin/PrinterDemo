@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -15,7 +16,9 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 
@@ -86,6 +89,18 @@ public class MedicalReportView extends View {
     
     // 图片区域位置缓存（用于点击检测）
     private Map<String, RectF> mImageRects = new HashMap<>();
+    
+    // 用户缩放和平移相关
+    private float mUserScale = 1.0f;           // 用户缩放比例
+    private float mTranslateX = 0f;            // X轴平移
+    private float mTranslateY = 0f;            // Y轴平移
+    private static final float MIN_SCALE = 1.0f;   // 最小缩放
+    private static final float MAX_SCALE = 3.0f;   // 最大缩放
+    
+    // 手势检测器
+    private ScaleGestureDetector mScaleGestureDetector;
+    private GestureDetector mGestureDetector;
+    private boolean mIsScaling = false;        // 是否正在缩放
 
     public MedicalReportView(Context context) {
         super(context);
@@ -119,6 +134,99 @@ public class MedicalReportView extends View {
         mImageCache = new HashMap<>();
         mReportLabels = new ArrayList<>();
         mImageAreaLabels = new ArrayList<>();
+        
+        // 初始化双指缩放手势检测器
+        mScaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                mIsScaling = true;
+                return true;
+            }
+            
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                float scaleFactor = detector.getScaleFactor();
+                float focusX = detector.getFocusX();
+                float focusY = detector.getFocusY();
+                
+                // 计算新的缩放比例
+                float newScale = mUserScale * scaleFactor;
+                newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+                
+                if (newScale != mUserScale) {
+                    // 以焦点为中心进行缩放
+                    float scaleChange = newScale / mUserScale;
+                    mTranslateX = focusX - (focusX - mTranslateX) * scaleChange;
+                    mTranslateY = focusY - (focusY - mTranslateY) * scaleChange;
+                    mUserScale = newScale;
+                    
+                    constrainTranslation();
+                    invalidate();
+                }
+                return true;
+            }
+            
+            @Override
+            public void onScaleEnd(ScaleGestureDetector detector) {
+                mIsScaling = false;
+            }
+        });
+        
+        // 初始化双击和拖动手势检测器
+        mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                // 双击切换缩放
+                float targetScale;
+                if (mUserScale > 1.5f) {
+                    // 已放大，恢复原始大小
+                    targetScale = 1.0f;
+                    mTranslateX = 0;
+                    mTranslateY = 0;
+                } else {
+                    // 放大到2倍，以点击位置为中心
+                    targetScale = 2.0f;
+                    float focusX = e.getX();
+                    float focusY = e.getY();
+                    mTranslateX = focusX - (focusX - mTranslateX) * (targetScale / mUserScale);
+                    mTranslateY = focusY - (focusY - mTranslateY) * (targetScale / mUserScale);
+                }
+                mUserScale = targetScale;
+                constrainTranslation();
+                invalidate();
+                return true;
+            }
+            
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                if (!mIsScaling && mUserScale > 1.0f) {
+                    // 只有放大时才允许拖动
+                    mTranslateX -= distanceX;
+                    mTranslateY -= distanceY;
+                    constrainTranslation();
+                    invalidate();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    
+    /**
+     * 限制平移范围，防止拖出边界
+     */
+    private void constrainTranslation() {
+        if (mUserScale <= 1.0f) {
+            mTranslateX = 0;
+            mTranslateY = 0;
+            return;
+        }
+        
+        float maxTranslateX = (mUserScale - 1) * mViewWidth / 2;
+        float maxTranslateY = (mUserScale - 1) * mViewHeight / 2;
+        
+        mTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, mTranslateX));
+        mTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, mTranslateY));
     }
 
     /**
@@ -297,7 +405,11 @@ public class MedicalReportView extends View {
         // 保存画布状态
         canvas.save();
         
-        // 应用缩放
+        // 应用用户缩放和平移
+        canvas.translate(mTranslateX, mTranslateY);
+        canvas.scale(mUserScale, mUserScale, mViewWidth / 2f, mViewHeight / 2f);
+        
+        // 应用基础缩放（纸张到View的缩放）
         canvas.scale(mScaleRatio, mScaleRatio);
         
         // 绘制报告内容
@@ -409,7 +521,7 @@ public class MedicalReportView extends View {
         float right = convertX(Float.parseFloat(label.getRight()));
         
         if ("1".equals(label.getBold())) {
-            mLinePaint.setStrokeWidth(3f);
+            mLinePaint.setStrokeWidth(2f);
         } else {
             mLinePaint.setStrokeWidth(1f);
         }
@@ -818,60 +930,93 @@ public class MedicalReportView extends View {
     // 记录按下时的坐标，用于判断是否是点击
     private float mDownX, mDownY;
     private static final int CLICK_THRESHOLD = 20; // 点击阈值（像素）
+    private long mLastClickTime = 0;
+    private static final long DOUBLE_CLICK_INTERVAL = 300; // 双击间隔时间
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mDownX = event.getX();
-                mDownY = event.getY();
-                // 检查是否点击在图片区域内
-                for (Map.Entry<String, RectF> entry : mImageRects.entrySet()) {
-                    RectF rect = entry.getValue();
-                    if (rect.contains(mDownX, mDownY)) {
-                        // 请求父View不要拦截触摸事件
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                        return true;
-                    }
-                }
-                break;
-                
-            case MotionEvent.ACTION_UP:
-                float x = event.getX();
-                float y = event.getY();
-                // 判断是否是点击（移动距离小于阈值）
-                if (Math.abs(x - mDownX) < CLICK_THRESHOLD && Math.abs(y - mDownY) < CLICK_THRESHOLD) {
-                    // 检测点击的是哪张图片
-                    for (Map.Entry<String, RectF> entry : mImageRects.entrySet()) {
-                        RectF rect = entry.getValue();
-                        if (rect.contains(x, y)) {
-                            String order = entry.getKey();
-                            Bitmap bitmap = mImageCache.get(order);
-                            if (bitmap != null && !bitmap.isRecycled()) {
-                                // 显示图片查看器
-                                showImageViewer(bitmap);
-                                return true;
-                            } else {
-                                // 检查是否是加载失败的图片
-                                Integer progress = mImageProgress.get(order);
-                                if (progress != null && progress == PROGRESS_FAILED) {
-                                    // 显示加载失败提示
-                                    Toast.makeText(getContext(), "图片加载失败，无法查看", Toast.LENGTH_SHORT).show();
-                                } else if (progress != null && progress >= 0 && progress < 100) {
-                                    // 正在加载中
-                                    Toast.makeText(getContext(), "图片加载中，请稍候...", Toast.LENGTH_SHORT).show();
-                                }
-                                return true;
-                            }
-                        }
-                    }
-                }
-                break;
-                
-            case MotionEvent.ACTION_CANCEL:
-                break;
+        // 先让缩放手势检测器处理
+        boolean scaleHandled = mScaleGestureDetector.onTouchEvent(event);
+        // 再让普通手势检测器处理（双击、拖动）
+        boolean gestureHandled = mGestureDetector.onTouchEvent(event);
+        
+        // 如果正在缩放，请求父View不要拦截
+        if (mIsScaling || mUserScale > 1.0f) {
+            getParent().requestDisallowInterceptTouchEvent(true);
         }
-        return super.onTouchEvent(event);
+        
+        // 处理单击图片查看（只在未缩放状态下）
+        if (mUserScale <= 1.0f && !mIsScaling) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    mDownX = event.getX();
+                    mDownY = event.getY();
+                    break;
+                    
+                case MotionEvent.ACTION_UP:
+                    float x = event.getX();
+                    float y = event.getY();
+                    long currentTime = System.currentTimeMillis();
+                    
+                    // 判断是否是单击（移动距离小于阈值，且不是双击）
+                    if (Math.abs(x - mDownX) < CLICK_THRESHOLD && Math.abs(y - mDownY) < CLICK_THRESHOLD) {
+                        // 如果距离上次点击时间超过双击间隔，才处理单击
+                        if (currentTime - mLastClickTime > DOUBLE_CLICK_INTERVAL) {
+                            // 延迟处理单击，等待可能的双击
+                            final float clickX = x;
+                            final float clickY = y;
+                            postDelayed(() -> {
+                                // 再次检查是否发生了双击
+                                if (System.currentTimeMillis() - mLastClickTime > DOUBLE_CLICK_INTERVAL) {
+                                    handleImageClick(clickX, clickY);
+                                }
+                            }, DOUBLE_CLICK_INTERVAL);
+                        }
+                        mLastClickTime = currentTime;
+                    }
+                    break;
+            }
+        }
+        
+        return scaleHandled || gestureHandled || super.onTouchEvent(event);
+    }
+    
+    /**
+     * 处理图片点击
+     */
+    private void handleImageClick(float x, float y) {
+        // 检测点击的是哪张图片
+        for (Map.Entry<String, RectF> entry : mImageRects.entrySet()) {
+            RectF rect = entry.getValue();
+            if (rect.contains(x, y)) {
+                String order = entry.getKey();
+                Bitmap bitmap = mImageCache.get(order);
+                if (bitmap != null && !bitmap.isRecycled()) {
+                    // 显示图片查看器
+                    showImageViewer(bitmap);
+                    return;
+                } else {
+                    // 检查是否是加载失败的图片
+                    Integer progress = mImageProgress.get(order);
+                    if (progress != null && progress == PROGRESS_FAILED) {
+                        Toast.makeText(getContext(), "图片加载失败，无法查看", Toast.LENGTH_SHORT).show();
+                    } else if (progress != null && progress >= 0 && progress < 100) {
+                        Toast.makeText(getContext(), "图片加载中，请稍候...", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+            }
+        }
+    }
+    
+    /**
+     * 重置缩放状态
+     */
+    public void resetZoom() {
+        mUserScale = 1.0f;
+        mTranslateX = 0;
+        mTranslateY = 0;
+        invalidate();
     }
     
     /**
@@ -953,5 +1098,8 @@ public class MedicalReportView extends View {
         
         // 重置波浪偏移
         mWaveOffset = 0;
+        
+        // 重置缩放状态
+        resetZoom();
     }
 }
