@@ -74,6 +74,13 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         
         initViews();
         initListeners();
+        mReportView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // 第一次进入界面，默认加载自动加载并渲染
+                loadReportWithImageCount(8);
+            }
+        },1000);
     }
     
     @Override
