@@ -41,7 +41,7 @@
 
 * 如果看不到gif动图，请科学上网查看gif效果图，或者下载项目之后本地打开。在picture文件夹/gif文件夹/打印报告录屏文件.gif
 
-<img src="picture/gif/打印报告录屏文件.gif" width="300" />
+<img src="picture/gif/打印报告录屏文件.gif" width="500" />
 
 ## 报告截图欣赏
 
