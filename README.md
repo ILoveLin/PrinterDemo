@@ -8,8 +8,6 @@
 
 ####    如果帮助的到了您，请您不要吝啬你的Star，先谢谢您的点赞（Star），3Q，3Q，3Q。
 
-
-
 * 官方打印图片链接地址:
 * //打印图片
 * https://developer.android.google.cn/training/printing/photos?hl=zh-cn
@@ -31,12 +29,6 @@
 *  我咨询了佳能的客服，客服的回应是：取出机身全部纸张，将后托盘重新放纸，按机身屏幕提示重新注册纸张尺寸与类型，再尝试打印
 *  按照客服的步骤操作解决了，每次点击打印的时候需要再去打印机点击OK(此时打印机显示：后端托盘中装入的纸张尺寸或者类型与打印设置不同)，才能打印的报告的问题
 
-
-
-
-
-
-
 ## 动图欣赏
 
 * 如果看不到gif动图，请科学上网查看gif效果图，或者下载项目之后本地打开。在picture文件夹/gif文件夹/打印报告录屏文件.gif
@@ -44,9 +36,6 @@
 <img src="picture/gif/打印报告录屏文件.gif" width="500" />
 
 ## 报告截图欣赏
-
-## 推荐使用方式的：报告截图欣赏
-
 | 图1 | 图2 |
 |:---:|:---:|
 | <img src="picture/report/自定义View_使用网络图片_打印报告预留图01.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图02.jpg" width="350" /> |
@@ -55,7 +44,7 @@
 
 ## 使用指南
 
- * 请直接，下载Demo查看，通俗易懂，谢谢。
+## 推荐使用方式的：报告截图欣赏
 
 #### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
 #### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
@@ -70,12 +59,10 @@
   * 2：点击具体招聘支持大图查看，支持左右滑动查看图表，支持双击或者双指缩放控制，图片大小
   * 3：支持双击或者双指缩放控制，报告大小
 
-* 
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图01.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图02.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图03.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图04.jpeg
-* 
   
  #### 主要功能（A，打印照片），PrintPictureReportActivity，可以直接下载Demo查看，功能查看代码即可。
  
@@ -93,8 +80,6 @@
  * 3，解析病例模板数据(A4，A3，B5)，其中的一种
  * 4，生成pdf文件
  * 5，打印自定义文档(打印生成的pdf文件)
-
-
 
 
 ## License
