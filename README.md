@@ -39,37 +39,41 @@
 
 ## 动图欣赏
 
-* 如果看不到gif动图，请科学上网查看gif效果图，或者下载项目之后本地打开。在picture文件夹/gif文件夹/1.gif
+* 如果看不到gif动图，请科学上网查看gif效果图，或者下载项目之后本地打开。在picture文件夹/gif文件夹/打印报告录屏文件.gif
 
+<img src="picture/gif/打印报告录屏文件.gif" width="300" />
 
-
-
-![](picture/gif/打印报告录屏文件.gif) 
-
-
- ## 报告截图欣赏
+## 报告截图欣赏
 
 ## 推荐使用方式的：报告截图欣赏
-![](report/自定义View_使用网络图片_打印报告预留图01.jpg)![](report/自定义View_使用网络图片_打印报告预留图02.jpg)![](report/自定义View_使用网络图片_打印报告预留图03.jpg)![](report/自定义View_使用网络图片_打印报告预留图04.jpg)
 
-## 报告截图,报告中红色和蓝色是我故意用颜色设置的,方便Demo查看 实际应用中可以取消掉的
- ![](report/PDF报告在SD卡的文件.png) ![](report/使用SD卡本地图片报告示例.jpg) ![](report/使用在线网络图的报告示例.jpg)
+| 报告截图1 | 报告截图2 |
+|:---:|:---:|
+| <img src="picture/report/自定义View_使用网络图片_打印报告预留图01.jpg" width="300" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图02.jpg" width="300" /> |
+| <img src="picture/report/自定义View_使用网络图片_打印报告预留图03.jpg" width="300" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图04.jpg" width="300" /> |
 
 ## 使用指南
 
  * 请直接，下载Demo查看，通俗易懂，谢谢。
 
-#### 最新更新功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
-#### 最新更新功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
-#### 最新更新功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
+#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
+#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
+#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
+
 * MedicalReportView画报告图，然后预览打印即可
 * 1，自定义View
 * 2，PrintDemoA4Activity界面直接点击打印报告,进行预览,和打印报告操作
-* 备注：画报告的同时加载网络图片新增贝赛尔曲线loading图，报告好之后，点击具体报告中的图片，支持双支放大和缩小查看，支持90度，180度旋转。
+* 
+* 备注：主要功能
+  * 1：画医用报告，A4或者A5纸张
+  * 2：点击具体招聘支持大图查看，支持左右滑动查看图表，支持双击或者双指缩放控制，图片大小
+  * 3：支持双击或者双指缩放控制，报告大小
+
 * 
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图01.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图02.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图03.jpeg
+* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图04.jpeg
 * 
   
  #### 主要功能（A，打印照片），PrintPictureReportActivity，可以直接下载Demo查看，功能查看代码即可。
