@@ -47,10 +47,11 @@
 
 ## 推荐使用方式的：报告截图欣赏
 
-| | |
+| 图1 | 图2 |
 |:---:|:---:|
-| <img src="picture/report/自定义View_使用网络图片_打印报告预留图01.jpg" width="300" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图02.jpg" width="300" /> |
-| <img src="picture/report/自定义View_使用网络图片_打印报告预留图03.jpg" width="300" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图04.jpg" width="300" /> |
+| <img src="picture/report/自定义View_使用网络图片_打印报告预留图01.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图02.jpg" width="350" /> |
+| 图3 | 图4 |
+| <img src="picture/report/自定义View_使用网络图片_打印报告预留图03.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图04.jpg" width="350" /> |
 
 ## 使用指南
 
