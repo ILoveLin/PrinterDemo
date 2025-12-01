@@ -87,8 +87,11 @@ public class MedicalReportView extends View {
     // 进度状态常量
     private static final int PROGRESS_FAILED = -1;
     
-    // 图片区域位置缓存（用于点击检测）
+    // 单个图片位置缓存（用于点击检测打开查看器）
     private Map<String, RectF> mImageRects = new HashMap<>();
+    
+    // 整个图片报告区域的边界（临床诊断/主诉以下，镜检所见以上）
+    private RectF mImageAreaBounds = new RectF();
     
     // 用户缩放和平移相关
     private float mUserScale = 1.0f;           // 用户缩放比例
@@ -118,6 +121,12 @@ public class MedicalReportView extends View {
     }
 
     private void init() {
+        Log.d(TAG, "MedicalReportView init() 被调用");
+        // 确保 View 可以接收触摸事件
+        setClickable(true);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.BLACK);
         
@@ -175,8 +184,25 @@ public class MedicalReportView extends View {
         // 初始化双击和拖动手势检测器
         mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
+            public boolean onDown(MotionEvent e) {
+                // 必须返回 true，否则 GestureDetector 不会检测后续手势（包括双击）
+                return true;
+            }
+            
+            @Override
             public boolean onDoubleTap(MotionEvent e) {
-                // 双击切换缩放
+                float x = e.getX();
+                float y = e.getY();
+                Log.d(TAG, "onDoubleTap: x=" + x + ", y=" + y + ", bounds=" + mImageAreaBounds.toString());
+                
+                // 检查双击位置是否在B区域（图片区域），如果在则不响应
+                if (isPointInImageArea(x, y)) {
+                    Log.d(TAG, "onDoubleTap: 在B区域，不响应缩放");
+                    return true; // 返回true表示已处理，但不执行缩放
+                }
+                
+                Log.d(TAG, "onDoubleTap: 在A或C区域，执行缩放");
+                // A区域或C区域：双击切换缩放
                 float targetScale;
                 if (mUserScale > 1.5f) {
                     // 已放大，恢复原始大小
@@ -555,16 +581,41 @@ public class MedicalReportView extends View {
             return;
         }
         
+        // 重置图片区域边界
+        float minLeft = Float.MAX_VALUE;
+        float minTop = Float.MAX_VALUE;
+        float maxRight = Float.MIN_VALUE;
+        float maxBottom = Float.MIN_VALUE;
+        
         for (LabelBean label : mImageAreaLabels) {
             String type = label.getType();
             
             if ("Image".equals(type)) {
                 drawImage(canvas, label);
+                
+                // 计算整个图片区域的边界
+                float left = convertX(Float.parseFloat(label.getLeft())) * mScaleRatio;
+                float top = convertY(Float.parseFloat(label.getTop())) * mScaleRatio;
+                float right = convertX(Float.parseFloat(label.getRight())) * mScaleRatio;
+                float bottom = convertY(Float.parseFloat(label.getBottom())) * mScaleRatio;
+                
+                minLeft = Math.min(minLeft, left);
+                minTop = Math.min(minTop, top);
+                maxRight = Math.max(maxRight, right);
+                maxBottom = Math.max(maxBottom, bottom);
             } else if ("ImageDesc".equals(type)) {
                 drawImageDesc(canvas, label);
             } else if ("ImageSketch".equals(type)) {
                 drawImageSketch(canvas, label);
             }
+        }
+        
+        // 更新整个图片区域的边界
+        // B区域横向扩展到整个View宽度，纵向保持图片区域的上下边界
+        if (minLeft != Float.MAX_VALUE) {
+            // 横向从0到View宽度，纵向保持图片区域边界
+            mImageAreaBounds.set(0, minTop, mViewWidth, maxBottom);
+            Log.d(TAG, "B区域边界更新: left=0, top=" + minTop + ", right=" + mViewWidth + ", bottom=" + maxBottom);
         }
     }
 
@@ -930,17 +981,27 @@ public class MedicalReportView extends View {
     // 记录按下时的坐标，用于判断是否是点击
     private float mDownX, mDownY;
     private static final int CLICK_THRESHOLD = 20; // 点击阈值（像素）
-    private long mLastClickTime = 0;
-    private static final long DOUBLE_CLICK_INTERVAL = 300; // 双击间隔时间
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // 先让缩放手势检测器处理
-        boolean scaleHandled = mScaleGestureDetector.onTouchEvent(event);
-        // 再让普通手势检测器处理（双击、拖动）
-        boolean gestureHandled = mGestureDetector.onTouchEvent(event);
+        // 调试日志
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            Log.d(TAG, "onTouchEvent ACTION_DOWN: x=" + event.getX() + ", y=" + event.getY());
+        }
         
-        // 如果正在缩放，请求父View不要拦截
+        // 多指触摸时（双指缩放），立即请求父View不要拦截
+        int pointerCount = event.getPointerCount();
+        if (pointerCount >= 2) {
+            getParent().requestDisallowInterceptTouchEvent(true);
+        }
+        
+        // 先让缩放手势检测器处理（双指缩放在任何区域都可用）
+        boolean scaleHandled = mScaleGestureDetector.onTouchEvent(event);
+        
+        // 始终让 GestureDetector 接收事件（在 onDoubleTap 回调中判断是否执行缩放）
+        mGestureDetector.onTouchEvent(event);
+        
+        // 如果正在缩放或已放大，请求父View不要拦截
         if (mIsScaling || mUserScale > 1.0f) {
             getParent().requestDisallowInterceptTouchEvent(true);
         }
@@ -951,34 +1012,57 @@ public class MedicalReportView extends View {
                 case MotionEvent.ACTION_DOWN:
                     mDownX = event.getX();
                     mDownY = event.getY();
+                    // ACTION_DOWN 时也请求不拦截，确保后续事件能收到
+                    getParent().requestDisallowInterceptTouchEvent(true);
                     break;
                     
                 case MotionEvent.ACTION_UP:
                     float x = event.getX();
                     float y = event.getY();
-                    long currentTime = System.currentTimeMillis();
                     
-                    // 判断是否是单击（移动距离小于阈值，且不是双击）
+                    // 判断是否是单击（移动距离小于阈值）
                     if (Math.abs(x - mDownX) < CLICK_THRESHOLD && Math.abs(y - mDownY) < CLICK_THRESHOLD) {
-                        // 如果距离上次点击时间超过双击间隔，才处理单击
-                        if (currentTime - mLastClickTime > DOUBLE_CLICK_INTERVAL) {
-                            // 延迟处理单击，等待可能的双击
-                            final float clickX = x;
-                            final float clickY = y;
-                            postDelayed(() -> {
-                                // 再次检查是否发生了双击
-                                if (System.currentTimeMillis() - mLastClickTime > DOUBLE_CLICK_INTERVAL) {
-                                    handleImageClick(clickX, clickY);
-                                }
-                            }, DOUBLE_CLICK_INTERVAL);
+                        // 只在B区域（图片区域）内才尝试打开图片查看器
+                        if (isPointInImageArea(x, y)) {
+                            handleImageClick(x, y);
                         }
-                        mLastClickTime = currentTime;
+                    }
+                    break;
+                    
+                case MotionEvent.ACTION_MOVE:
+                    // 移动时如果是多指，继续请求不拦截
+                    if (pointerCount >= 2) {
+                        getParent().requestDisallowInterceptTouchEvent(true);
                     }
                     break;
             }
         }
         
-        return scaleHandled || gestureHandled || super.onTouchEvent(event);
+        return true; // 始终返回 true，确保能接收到完整的触摸事件序列
+    }
+    
+    /**
+     * 检查点击位置是否在整个图片报告区域内
+     * （临床诊断/主诉以下，镜检所见以上的区域）
+     */
+    private boolean isPointInImageArea(float x, float y) {
+        // 使用整个图片区域边界来判断
+        boolean result = mImageAreaBounds.contains(x, y);
+        Log.d(TAG, "isPointInImageArea: x=" + x + ", y=" + y + 
+              ", bounds=" + mImageAreaBounds.toString() + ", result=" + result);
+        return result;
+    }
+    
+    /**
+     * 检查点击位置是否在某张具体图片上
+     */
+    private boolean isPointOnImage(float x, float y) {
+        for (RectF rect : mImageRects.values()) {
+            if (rect.contains(x, y)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -1095,6 +1179,7 @@ public class MedicalReportView extends View {
         
         // 清除图片区域位置缓存
         mImageRects.clear();
+        mImageAreaBounds.setEmpty();
         
         // 重置波浪偏移
         mWaveOffset = 0;

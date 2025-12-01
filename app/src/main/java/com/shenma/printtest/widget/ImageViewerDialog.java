@@ -591,10 +591,17 @@ public class ImageViewerDialog extends Dialog {
 
                 case MotionEvent.ACTION_MOVE:
                     if (mMode == DRAG) {
-                        mMatrix.set(mSavedMatrix);
                         float dx = event.getX() - mStartX;
                         float dy = event.getY() - mStartY;
-                        mMatrix.postTranslate(dx, dy);
+                        
+                        if (mIsZoomedIn) {
+                            // 放大状态：允许自由拖动
+                            mMatrix.set(mSavedMatrix);
+                            mMatrix.postTranslate(dx, dy);
+                        } else {
+                            // 未放大状态：只允许水平滑动（用于切换图片），不移动图片本身
+                            // 图片保持原位，滑动效果在 ACTION_UP 时通过动画实现
+                        }
                     } else if (mMode == ZOOM && event.getPointerCount() >= 2) {
                         float newDist = spacing(event);
                         if (newDist > 10f) {

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 33
     namespace 'com.shenma.printtest'
     defaultConfig {
         minSdk 24
-        targetSdk 34
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 

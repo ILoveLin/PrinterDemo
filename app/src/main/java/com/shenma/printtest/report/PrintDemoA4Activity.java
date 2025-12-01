@@ -55,16 +55,15 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     
     // 示例图片URL列表（使用指定的图片地址）
     private String[] mImageUrls = {
-        "https://www.szcme.com/assets/image/与KMT合照.jpg",
-        "https://www.szcme.com/assets/image/与客户合照.jpg",
-        "https://www.szcme.com/assets/image1/与KMT合照.jpg", //故意是指错误地址，查看加载失败的效果
-//        "https://www.szcme.com/assets/image/与KMT合照.jpg",
-        "https://www.szcme.com/assets/image/与客户合照2.jpg",
-        "https://www.szcme.com/assets/image/与KMT合照.jpg",
-        "https://www.szcme.com/assets/image/2.png",
-        "https://www.szcme.com/assets/image/与KMT合照.jpg",
-        "https://www.szcme.com/assets/image/20241122_5.jpg",
-        "https://www.szcme.com/assets/image/与KMT合照.jpg"
+        "https://img2.baidu.com/it/u=2627559326,3482702172&fm=253&fmt=auto&app=138&f=JPEG?w=1280&h=800",
+        "https://n.sinaimg.cn/sinacn11/400/w1280h720/20180701/bd68-hespqrx9236695.jpg",
+        "https://img0.baidu.com/it/u=1219580420,973302569&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500",
+        "https://img2.baidu.com/it/u=1454921650,1055787642&fm=253&app=138&f=JPEG?w=1422&h=800",
+        "https://img1.baidu.com/it/u=3167384741,3150079165&fm=253&app=138&f=JPEG?w=1422&h=800",
+        "https://img1.baidu.com/it/u=949147375,1126594111&fm=253&app=138&f=JPEG?w=1200&h=800",
+        "https://img0.baidu.com/it/u=3809256632,588621815&fm=253&app=138&f=JPEG?w=1200&h=800",
+        "https://img1.baidu.com/it/u=2192043749,1951613276&fm=253&fmt=auto&app=138&f=JPEG?w=1422&h=800",
+        "https://i2.3conline.com/images/piclib/200909/18/batch/1/40998/12532295224100c49al6l5e.jpg"
     };
 
     @Override
@@ -495,8 +494,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             mReportView.setImageUrl(order, mImageUrls[i]);
         }
         
-        // 加载Logo
-        mReportView.setImageUrl("logo", "https://www.szcme.com/assets/image/与KMT合照.jpg");
+        mReportView.setImageUrl("logo", "https://img0.baidu.com/it/u=122751848,1783287837&fm=253&fmt=auto&app=138&f=JPEG?w=693&h=500");
     }
 
     /**

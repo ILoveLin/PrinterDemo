@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="50dp"
         android:background="#2196F3"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -48,7 +48,7 @@
         android:background="#FFFFFF"
         android:elevation="4dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="5dp">
 
         <!-- 纸张大小选择 -->
         <LinearLayout
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+           >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -210,38 +210,26 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="提示：点击1-9按钮选择图片数量，自动加载报告"
             android:textColor="#999999"
             android:textSize="12sp" />
     </LinearLayout>
 
-    <!-- 报告预览区域 - 支持双向滚动 -->
-    <HorizontalScrollView
+    <!-- 报告预览区域 - 直接放置，由 MedicalReportView 自己处理缩放 -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/control_panel"
-        android:layout_marginTop="8dp"
-        android:fillViewport="true">
+        android:layout_marginTop="5dp"
+        android:padding="5dp">
 
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
-
-                <com.shenma.printtest.widget.MedicalReportView
-                    android:id="@+id/medical_report_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:elevation="2dp" />
-            </FrameLayout>
-        </ScrollView>
-    </HorizontalScrollView>
+        <com.shenma.printtest.widget.MedicalReportView
+            android:id="@+id/medical_report_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="#FFFFFF"
+            android:elevation="2dp" />
+    </FrameLayout>
 
 </RelativeLayout>

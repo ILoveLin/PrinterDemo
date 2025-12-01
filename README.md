@@ -44,15 +44,16 @@
 
 
 
-![](picture/gif/1.gif) 
+![](picture/gif/打印报告录屏文件.gif) 
 
 
  ## 报告截图欣赏
- 
- ## 报告截图,报告中红色和蓝色是我故意用颜色设置的,方便Demo查看 实际应用中可以取消掉的
- 
+
+## 推荐使用方式的：报告截图欣赏
+![](report/自定义View_使用网络图片_打印报告预留图01.jpg)![](report/自定义View_使用网络图片_打印报告预留图02.jpg)![](report/自定义View_使用网络图片_打印报告预留图03.jpg)![](report/自定义View_使用网络图片_打印报告预留图04.jpg)
+
+## 报告截图,报告中红色和蓝色是我故意用颜色设置的,方便Demo查看 实际应用中可以取消掉的
  ![](report/PDF报告在SD卡的文件.png) ![](report/使用SD卡本地图片报告示例.jpg) ![](report/使用在线网络图的报告示例.jpg)
- ![](report/自定义View_使用网络图片_打印报告预留图2.jpg)![](report/自定义View_使用网络图片_打印报告预留图2.jpeg)
 
 ## 使用指南
 
@@ -66,8 +67,9 @@
 * 2，PrintDemoA4Activity界面直接点击打印报告,进行预览,和打印报告操作
 * 备注：画报告的同时加载网络图片新增贝赛尔曲线loading图，报告好之后，点击具体报告中的图片，支持双支放大和缩小查看，支持90度，180度旋转。
 * 
-* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图1.jpeg
-* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图2.jpeg
+* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图01.jpeg
+* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图02.jpeg
+* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图03.jpeg
 * 
   
  #### 主要功能（A，打印照片），PrintPictureReportActivity，可以直接下载Demo查看，功能查看代码即可。
