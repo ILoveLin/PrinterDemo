@@ -39,7 +39,7 @@
         <activity android:name=".report.PrintPdfReportLocalImageActivity" />
         <activity android:name=".report.PrintPdfReportNetImageActivity" />
         <activity android:name=".report.TestReportActivity" />
-        <activity android:name=".report.PrintDemoA4Activity" />
+        <activity android:name=".report.PrintDemoA3_A4_A5_B5Activity" />
 
     </application>
 

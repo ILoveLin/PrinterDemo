@@ -2,14 +2,12 @@ package com.shenma.printtest.report;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
 import android.print.PrintAttributes;
 import android.print.PrintJob;
 import android.print.PrintManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +35,7 @@ import javax.xml.parsers.SAXParserFactory;
  * 强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
  * 强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
  */
-public class PrintDemoA4Activity extends AppCompatActivity {
+public class PrintDemoA3_A4_A5_B5Activity extends AppCompatActivity {
     private static final String TAG = "PrintDemoA4Activity";
 
     private MedicalReportView mReportView;
@@ -45,7 +43,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private Button mBtnBack;
     private Button mBtnImage1, mBtnImage2, mBtnImage3, mBtnImage4, mBtnImage5;
     private Button mBtnImage6, mBtnImage7, mBtnImage8, mBtnImage9;
-    private Button mBtnPaperA4, mBtnPaperA5, mBtnPaperB5;  // 纸张大小选择按钮
+    private Button mBtnPaperA4, mBtnPaperA5, mBtnPaperB5, mBtnPaperA3;  // 纸张大小选择按钮
     private int mCurrentImageCount = 6; // 当前选择的图片数量
     private int mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A4; // 当前纸张大小，默认A4
 
@@ -115,6 +113,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         mBtnPaperA4 = findViewById(R.id.btn_paper_a4);
         mBtnPaperA5 = findViewById(R.id.btn_paper_a5);
         mBtnPaperB5 = findViewById(R.id.btn_paper_b5);
+        mBtnPaperA3 = findViewById(R.id.btn_paper_a3);
     }
 
     private void initListeners() {
@@ -143,7 +142,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
                 // 自动加载并渲染
                 loadReportWithImageCount(imageCount);
 
-                Toast.makeText(PrintDemoA4Activity.this,
+                Toast.makeText(PrintDemoA3_A4_A5_B5Activity.this,
                         "已选择" + imageCount + "张图片模板", Toast.LENGTH_SHORT).show();
             }
         };
@@ -164,7 +163,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             updatePaperSizeButtonState();
             // 重新加载报告
             loadReportWithImageCount(mCurrentImageCount);
-            Toast.makeText(PrintDemoA4Activity.this, "已切换到A4纸张", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PrintDemoA3_A4_A5_B5Activity.this, "已切换到A4纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到A4纸张");
         });
 
@@ -173,7 +172,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             updatePaperSizeButtonState();
             // 重新加载报告
             loadReportWithImageCount(mCurrentImageCount);
-            Toast.makeText(PrintDemoA4Activity.this, "已切换到A5纸张", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PrintDemoA3_A4_A5_B5Activity.this, "已切换到A5纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到A5纸张");
         });
 
@@ -182,8 +181,17 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             updatePaperSizeButtonState();
             // 重新加载报告
             loadReportWithImageCount(mCurrentImageCount);
-            Toast.makeText(PrintDemoA4Activity.this, "已切换到B5纸张", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PrintDemoA3_A4_A5_B5Activity.this, "已切换到B5纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到B5纸张");
+        });
+
+        mBtnPaperA3.setOnClickListener(v -> {
+            mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A3;
+            updatePaperSizeButtonState();
+            // 重新加载报告
+            loadReportWithImageCount(mCurrentImageCount);
+            Toast.makeText(PrintDemoA3_A4_A5_B5Activity.this, "已切换到A3纸张", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "切换到A3纸张");
         });
 
         // 初始化按钮状态
@@ -194,18 +202,21 @@ public class PrintDemoA4Activity extends AppCompatActivity {
      * 更新纸张大小按钮的状态
      */
     private void updatePaperSizeButtonState() {
+        // 先全部启用
+        mBtnPaperA4.setEnabled(true);
+        mBtnPaperA5.setEnabled(true);
+        mBtnPaperB5.setEnabled(true);
+        mBtnPaperA3.setEnabled(true);
+        
+        // 禁用当前选中的
         if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A4) {
             mBtnPaperA4.setEnabled(false);
-            mBtnPaperA5.setEnabled(true);
-            mBtnPaperB5.setEnabled(true);
         } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A5) {
-            mBtnPaperA4.setEnabled(true);
             mBtnPaperA5.setEnabled(false);
-            mBtnPaperB5.setEnabled(true);
         } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_B5) {
-            mBtnPaperA4.setEnabled(true);
-            mBtnPaperA5.setEnabled(true);
             mBtnPaperB5.setEnabled(false);
+        } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A3) {
+            mBtnPaperA3.setEnabled(false);
         }
     }
 
@@ -250,6 +261,8 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             return "A5";
         } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_B5) {
             return "B5";
+        } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A3) {
+            return "A3";
         } else {
             return "A4";
         }
@@ -546,6 +559,9 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_B5) {
                 builder.setMediaSize(PrintAttributes.MediaSize.JIS_B5);  // B5纸张
                 Log.d(TAG, "打印纸张: B5");
+            } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A3) {
+                builder.setMediaSize(PrintAttributes.MediaSize.ISO_A3);  // A3纸张
+                Log.d(TAG, "打印纸张: A3");
             } else {
                 builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);  // A4纸张
                 Log.d(TAG, "打印纸张: A4");

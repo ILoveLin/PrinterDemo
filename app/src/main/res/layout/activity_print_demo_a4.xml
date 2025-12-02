@@ -67,36 +67,40 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/btn_paper_a4"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
+                android:id="@+id/btn_paper_a3"
+                android:layout_width="50dp"
+                android:layout_height="36dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="4dp"
+                android:padding="0dp"
+                android:text="A3"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_paper_a4"
+                android:layout_width="50dp"
+                android:layout_height="36dp"
+                android:layout_marginRight="4dp"
+                android:padding="0dp"
                 android:text="A4"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/btn_paper_a5"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
+                android:layout_width="50dp"
+                android:layout_height="36dp"
                 android:layout_marginRight="4dp"
+                android:padding="0dp"
                 android:text="A5"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/btn_paper_b5"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
+                android:layout_width="50dp"
+                android:layout_height="36dp"
+                android:padding="0dp"
                 android:text="B5"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:text="(A4: 210×297mm, A5: 148×210mm, B5: 176×250mm)"
-                android:textColor="#999999"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -223,21 +227,35 @@
             android:textSize="12sp" />
     </LinearLayout>
 
-    <!-- 报告预览区域 - 直接放置，由 MedicalReportView 自己处理缩放 -->
-    <FrameLayout
+    <!-- 报告预览区域 - 支持上下左右滑动 -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/control_panel"
         android:layout_marginTop="5dp"
-        android:padding="5dp">
+        android:fillViewport="true">
 
-        <com.shenma.printtest.widget.MedicalReportView
-            android:id="@+id/medical_report_view"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="#FFFFFF"
-            android:elevation="2dp" />
-    </FrameLayout>
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <com.shenma.printtest.widget.MedicalReportView
+                    android:id="@+id/medical_report_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="#FFFFFF"
+                    android:elevation="2dp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </HorizontalScrollView>
 
 </RelativeLayout>

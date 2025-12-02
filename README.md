@@ -36,34 +36,38 @@
 <img src="picture/gif/打印报告录屏文件.gif" width="500" />
 
 ## 报告截图欣赏
-| 图1 | 图2 |
+| 图1(A4) | 图2(A4) |
 |:---:|:---:|
 | <img src="picture/report/自定义View_使用网络图片_打印报告预留图01.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图02.jpg" width="350" /> |
-| 图3 | 图4 |
+| 图3(报告预览) | 图4(A5) |
 | <img src="picture/report/自定义View_使用网络图片_打印报告预留图03.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图04.jpg" width="350" /> |
+| 图5(B5) | 图6(A3) |
+| <img src="picture/report/自定义View_使用网络图片_打印报告预览图05.jpeg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预览图06.jpeg" width="350" /> |
 
 ## 使用指南
 
 
-#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
-#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
-#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA4Activity，可以直接下载Demo查看，功能查看代码即可。
+#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA3_A4_A5_B5Activity，可以直接下载Demo查看，功能查看代码即可。
+#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA3_A4_A5_B5Activity，可以直接下载Demo查看，功能查看代码即可。
+#### 最新更新de主要功能（自定义MedicalReportView画报告图，图片来源于网络图，推荐使用此方式），PrintDemoA3_A4_A5_B5Activity，可以直接下载Demo查看，功能查看代码即可。
 
 * MedicalReportView画报告图，然后预览打印即可
 * 1，自定义View
-* 2，PrintDemoA4Activity界面直接点击打印报告,进行预览,和打印报告操作
+* 2，PrintDemoA3_A4_A5_B5Activity界面直接点击打印报告,进行预览,和打印报告操作
 
 * 备注：主要功能
-  * 1：画医用报告，A4或者A5纸张
-  * 2：点击具体招聘支持大图查看，支持左右滑动查看图表，支持双击或者双指缩放控制，图片大小
+  * 1：画医用报告：常用纸张：A4，A5纸张。少用纸张类型：A3，B5纸张，基本上涵盖了医疗行业全部报告纸张类型
+  * 2：点击具体照片支持大图查看，支持左右滑动查看图表，支持双击或者双指缩放控制，图片大小
   * 3：支持双击或者双指缩放控制，报告大小
 
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图01.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图02.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图03.jpeg
 * 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图04.jpeg
+* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图05.jpeg
+* 效果请看下载好项目的路径：PrinterDemo\picture\report\自定义View_使用网络图片_打印报告预览图06.jpeg
   
- #### 主要功能（A，打印照片），PrintPictureReportActivity，可以直接下载Demo查看，功能查看代码即可。
+ #### 主要功能（A，打印照片），PrintDemoA3_A4_A5_B5Activity，支持打印A3，A4，A5，B5纸张类型报告，可以直接下载Demo查看，功能查看代码即可。
  
  #### 主要功能（B，跳转,打印自定义文档（报告中图片是SD卡本地文件）），PrintPdfReportLocalImageActivity，自定义文档打印其实是生成pdf文件，然后打印pdf文件，因为比较复杂，这边我详细讲解下具体流程。也可以直接下载Demo，功能查看代码即可。
  * 打印自定义文档流程(此处我是打印报告医用报告，当前报告的所有文字,图标,都会根据xml获取到，具体像素值的xy坐标值,以及left，right，top，bottom的值。然后把win像素值转换成A4纸张的像素值来确定具体位置画成pdf报告,代码里面有转换工具类,直接转换win像素到android像素)

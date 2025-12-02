@@ -51,6 +51,7 @@ public class MedicalReportView extends View {
     public static final int PAPER_SIZE_A4 = 0;
     public static final int PAPER_SIZE_A5 = 1;
     public static final int PAPER_SIZE_B5 = 2;
+    public static final int PAPER_SIZE_A3 = 3;
     
     private static final float A4_WIDTH = 595f;
     private static final float A4_HEIGHT = 842f;
@@ -58,6 +59,8 @@ public class MedicalReportView extends View {
     private static final float A5_HEIGHT = 595f;
     private static final float B5_WIDTH = 499f;
     private static final float B5_HEIGHT = 709f;
+    private static final float A3_WIDTH = 842f;
+    private static final float A3_HEIGHT = 1191f;
     
     private int mPaperSize = PAPER_SIZE_A4;  // 默认A4
     private float mPaperWidth = A4_WIDTH;
@@ -357,6 +360,9 @@ public class MedicalReportView extends View {
         } else if (paperSize == PAPER_SIZE_B5) {
             mPaperWidth = B5_WIDTH;
             mPaperHeight = B5_HEIGHT;
+        } else if (paperSize == PAPER_SIZE_A3) {
+            mPaperWidth = A3_WIDTH;
+            mPaperHeight = A3_HEIGHT;
         } else {
             mPaperWidth = A4_WIDTH;
             mPaperHeight = A4_HEIGHT;
@@ -402,6 +408,7 @@ public class MedicalReportView extends View {
         // A4纸张：使用基准宽度
         // A5纸张：按照A5与A4的宽度比例缩小
         // B5纸张：按照B5与A4的宽度比例缩小
+        // A3纸张：按照A3与A4的宽度比例放大
         if (mPaperSize == PAPER_SIZE_A5) {
             // A5宽度是A4宽度的 420/595 ≈ 0.706
             float a5ToA4Ratio = A5_WIDTH / A4_WIDTH;
@@ -410,6 +417,10 @@ public class MedicalReportView extends View {
             // B5宽度是A4宽度的 499/595 ≈ 0.839
             float b5ToA4Ratio = B5_WIDTH / A4_WIDTH;
             mViewWidth = (int) (baseDisplayWidth * b5ToA4Ratio);
+        } else if (mPaperSize == PAPER_SIZE_A3) {
+            // A3宽度是A4宽度的 842/595 ≈ 1.415
+            float a3ToA4Ratio = A3_WIDTH / A4_WIDTH;
+            mViewWidth = (int) (baseDisplayWidth * a3ToA4Ratio);
         } else {
             // A4纸张使用基准宽度
             mViewWidth = baseDisplayWidth;
@@ -428,7 +439,8 @@ public class MedicalReportView extends View {
         mScaleRatio = mViewWidth / mPaperWidth;
         
         String paperType = mPaperSize == PAPER_SIZE_A5 ? "A5" : 
-                          (mPaperSize == PAPER_SIZE_B5 ? "B5" : "A4");
+                          (mPaperSize == PAPER_SIZE_B5 ? "B5" : 
+                          (mPaperSize == PAPER_SIZE_A3 ? "A3" : "A4"));
         Log.d("MedicalReportView", "纸张: " + paperType + 
               ", 显示尺寸: " + mViewWidth + "x" + mViewHeight + 
               ", 缩放比例: " + mScaleRatio);
@@ -841,13 +853,13 @@ public class MedicalReportView extends View {
     /**
      * 转换X坐标
      * 1. Windows 96 DPI -> Android 72 DPI
-     * 2. 如果是A5或B5纸张，需要额外缩放坐标
+     * 2. 如果是A5、B5或A3纸张，需要额外缩放坐标
      */
     private float convertX(float windowsX) {
         // 第一步：DPI转换 (Windows 96 DPI -> Android 72 DPI)
         float androidX = (windowsX / 96f) * 72f;
         
-        // 第二步：如果是A5或B5纸张，需要按比例缩放坐标
+        // 第二步：如果是A5、B5或A3纸张，需要按比例缩放坐标
         // XML模板中的坐标是基于A4纸张的，需要转换到对应纸张坐标系
         if (mPaperSize == PAPER_SIZE_A5) {
             // A5宽度是A4宽度的 420/595
@@ -857,6 +869,10 @@ public class MedicalReportView extends View {
             // B5宽度是A4宽度的 499/595
             float scaleRatio = B5_WIDTH / A4_WIDTH;
             androidX = androidX * scaleRatio;
+        } else if (mPaperSize == PAPER_SIZE_A3) {
+            // A3宽度是A4宽度的 842/595
+            float scaleRatio = A3_WIDTH / A4_WIDTH;
+            androidX = androidX * scaleRatio;
         }
         
         return androidX;
@@ -865,13 +881,13 @@ public class MedicalReportView extends View {
     /**
      * 转换Y坐标
      * 1. Windows 96 DPI -> Android 72 DPI
-     * 2. 如果是A5或B5纸张，需要额外缩放坐标
+     * 2. 如果是A5、B5或A3纸张，需要额外缩放坐标
      */
     private float convertY(float windowsY) {
         // 第一步：DPI转换 (Windows 96 DPI -> Android 72 DPI)
         float androidY = (windowsY / 96f) * 72f;
         
-        // 第二步：如果是A5或B5纸张，需要按比例缩放坐标
+        // 第二步：如果是A5、B5或A3纸张，需要按比例缩放坐标
         // XML模板中的坐标是基于A4纸张的，需要转换到对应纸张坐标系
         if (mPaperSize == PAPER_SIZE_A5) {
             // A5高度是A4高度的 595/842
@@ -881,6 +897,10 @@ public class MedicalReportView extends View {
             // B5高度是A4高度的 709/842
             float scaleRatio = B5_HEIGHT / A4_HEIGHT;
             androidY = androidY * scaleRatio;
+        } else if (mPaperSize == PAPER_SIZE_A3) {
+            // A3高度是A4高度的 1191/842
+            float scaleRatio = A3_HEIGHT / A4_HEIGHT;
+            androidY = androidY * scaleRatio;
         }
         
         return androidY;
@@ -889,19 +909,22 @@ public class MedicalReportView extends View {
     /**
      * 转换字体大小
      * 1. Windows字体大小 -> Android字体大小
-     * 2. 如果是A5或B5纸张，需要按比例缩放字体
+     * 2. 如果是A5、B5或A3纸张，需要按比例缩放字体
      */
     private float convertFontSize(float windowsFontSize) {
         // 第一步：Windows字体大小转换为Android字体大小
         float androidFontSize = windowsFontSize / (1440f / 72f);
         
-        // 第二步：如果是A5或B5纸张，需要按比例缩放字体
+        // 第二步：如果是A5、B5或A3纸张，需要按比例缩放字体
         // 使用宽度比例来缩放字体，保持视觉一致性
         if (mPaperSize == PAPER_SIZE_A5) {
             float scaleRatio = A5_WIDTH / A4_WIDTH;
             androidFontSize = androidFontSize * scaleRatio;
         } else if (mPaperSize == PAPER_SIZE_B5) {
             float scaleRatio = B5_WIDTH / A4_WIDTH;
+            androidFontSize = androidFontSize * scaleRatio;
+        } else if (mPaperSize == PAPER_SIZE_A3) {
+            float scaleRatio = A3_WIDTH / A4_WIDTH;
             androidFontSize = androidFontSize * scaleRatio;
         }
         
@@ -1016,16 +1039,19 @@ public class MedicalReportView extends View {
             Log.d(TAG, "onTouchEvent ACTION_DOWN: x=" + event.getX() + ", y=" + event.getY());
         }
         
-        // 多指触摸时（双指缩放），立即请求父View不要拦截
         int pointerCount = event.getPointerCount();
+        
+        // 多指触摸时（双指缩放），请求父View不要拦截
         if (pointerCount >= 2) {
             getParent().requestDisallowInterceptTouchEvent(true);
+            mScaleGestureDetector.onTouchEvent(event);
+            return true;
         }
         
-        // 先让缩放手势检测器处理（双指缩放在任何区域都可用）
-        boolean scaleHandled = mScaleGestureDetector.onTouchEvent(event);
+        // 先让缩放手势检测器处理
+        mScaleGestureDetector.onTouchEvent(event);
         
-        // 始终让 GestureDetector 接收事件（在 onDoubleTap 回调中判断是否执行缩放）
+        // 让GestureDetector处理双击事件
         mGestureDetector.onTouchEvent(event);
         
         // 如果正在缩放或已放大，请求父View不要拦截
@@ -1039,8 +1065,17 @@ public class MedicalReportView extends View {
                 case MotionEvent.ACTION_DOWN:
                     mDownX = event.getX();
                     mDownY = event.getY();
-                    // ACTION_DOWN 时也请求不拦截，确保后续事件能收到
+                    // 先请求不拦截，等待判断是点击还是滑动
                     getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                    
+                case MotionEvent.ACTION_MOVE:
+                    float moveX = event.getX();
+                    float moveY = event.getY();
+                    // 如果移动距离超过阈值，说明是滑动，让父View处理
+                    if (Math.abs(moveX - mDownX) > CLICK_THRESHOLD || Math.abs(moveY - mDownY) > CLICK_THRESHOLD) {
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    }
                     break;
                     
                 case MotionEvent.ACTION_UP:
@@ -1055,17 +1090,10 @@ public class MedicalReportView extends View {
                         }
                     }
                     break;
-                    
-                case MotionEvent.ACTION_MOVE:
-                    // 移动时如果是多指，继续请求不拦截
-                    if (pointerCount >= 2) {
-                        getParent().requestDisallowInterceptTouchEvent(true);
-                    }
-                    break;
             }
         }
         
-        return true; // 始终返回 true，确保能接收到完整的触摸事件序列
+        return true; // 始终返回true，确保能接收到完整的触摸事件序列
     }
     
     /**

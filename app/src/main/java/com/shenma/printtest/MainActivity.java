@@ -1,15 +1,12 @@
 package com.shenma.printtest;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.shenma.printtest.report.PrintPdfReportLocalImageActivity;
-import com.shenma.printtest.report.PrintPdfReportNetImageActivity;
-import com.shenma.printtest.report.PrintPictureReportActivity;
+import com.shenma.printtest.report.PrintDemoA3_A4_A5_B5Activity;
 
 /**
  * company：江西神州医疗设备有限公司
@@ -19,7 +16,6 @@ import com.shenma.printtest.report.PrintPictureReportActivity;
  */
 public class MainActivity extends AppCompatActivity {
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,12 +56,20 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
-        findViewById(R.id.tv_demo_a4).setOnClickListener(new View.OnClickListener() {
+        // 退出按钮
+        findViewById(R.id.btn_exit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, com.shenma.printtest.report.PrintDemoA4Activity.class);
-                startActivity(intent);
+                finish();
+            }
+        });
 
+        // 跳转到医用报告打印界面（CardView点击）
+        findViewById(R.id.card_demo_a4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PrintDemoA3_A4_A5_B5Activity.class);
+                startActivity(intent);
             }
         });
     }
