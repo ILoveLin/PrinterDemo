@@ -32,6 +32,9 @@ import java.util.List;
 /**
  * 图片查看器Dialog
  * 支持双指缩放、旋转、左右滑动切换功能
+ * 使用自定义View渲染医用报告
+ * author： LoveLin
+ * time：2025/12/1
  */
 public class ImageViewerDialog extends Dialog {
 

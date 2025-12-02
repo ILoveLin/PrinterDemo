@@ -40,6 +40,9 @@ import java.util.concurrent.Future;
 /**
  * 自定义医用报告View
  * 支持1-9张图片的医用报告渲染
+ * 使用自定义View渲染医用报告
+ * author： LoveLin
+ * time：2025/12/1 
  */
 public class MedicalReportView extends View {
     private static final String TAG = "MedicalReportView";

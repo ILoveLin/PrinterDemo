@@ -29,18 +29,17 @@ import javax.xml.parsers.SAXParserFactory;
 
 /**
  * A4医用报告打印演示Activity
- *
  * 使用自定义View渲染医用报告
- *
- *  强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
- *  强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
- *  强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
- *
- *
+ * author： LoveLin
+ * time：2025/12/1 8:58
+ * desc：网络打印机-----使用自定义View渲染医用报告
+ * 强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
+ * 强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
+ * 强烈推荐使用此方式，打印报告，高清晰度，优化更好！！！
  */
 public class PrintDemoA4Activity extends AppCompatActivity {
     private static final String TAG = "PrintDemoA4Activity";
-    
+
     private MedicalReportView mReportView;
     private Button mBtnPrint;
     private Button mBtnBack;
@@ -49,28 +48,28 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private Button mBtnPaperA4, mBtnPaperA5;  // 纸张大小选择按钮
     private int mCurrentImageCount = 6; // 当前选择的图片数量
     private int mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A4; // 当前纸张大小，默认A4
-    
+
     private ArrayList<LabelBean> mReportLabels;
     private ArrayList<LabelBean> mImageAreaLabels;
-    
+
     // 示例图片URL列表（使用指定的图片地址）
     private String[] mImageUrls = {
-        "https://img2.baidu.com/it/u=2627559326,3482702172&fm=253&fmt=auto&app=138&f=JPEG?w=1280&h=800",
-        "https://n.sinaimg.cn/sinacn11/400/w1280h720/20180701/bd68-hespqrx9236695.jpg",
-        "https://img0.baidu.com/it/u=1219580420,973302569&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500",
-        "https://img2.baidu.com/it/u=1454921650,1055787642&fm=253&app=138&f=JPEG?w=1422&h=800",
-        "https://img1.baidu.com/it/u=3167384741,3150079165&fm=253&app=138&f=JPEG?w=1422&h=800",
-        "https://img1.baidu.com/it/u=949147375,1126594111&fm=253&app=138&f=JPEG?w=1200&h=800",
-        "https://img0.baidu.com/it/u=3809256632,588621815&fm=253&app=138&f=JPEG?w=1200&h=800",
-        "https://img1.baidu.com/it/u=2192043749,1951613276&fm=253&fmt=auto&app=138&f=JPEG?w=1422&h=800",
-        "https://i2.3conline.com/images/piclib/200909/18/batch/1/40998/12532295224100c49al6l5e.jpg"
+            "https://img2.baidu.com/it/u=2627559326,3482702172&fm=253&fmt=auto&app=138&f=JPEG?w=1280&h=800",
+            "https://n.sinaimg.cn/sinacn11/400/w1280h720/20180701/bd68-hespqrx9236695.jpg",
+            "https://img0.baidu.com/it/u=1219580420,973302569&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500",
+            "https://img2.baidu.com/it/u=1454921650,1055787642&fm=253&app=138&f=JPEG?w=1422&h=800",
+            "https://img1.baidu.com/it/u=3167384741,3150079165&fm=253&app=138&f=JPEG?w=1422&h=800",
+            "https://img1.baidu.com/it/u=949147375,1126594111&fm=253&app=138&f=JPEG?w=1200&h=800",
+            "https://img0.baidu.com/it/u=3809256632,588621815&fm=253&app=138&f=JPEG?w=1200&h=800",
+            "https://img1.baidu.com/it/u=2192043749,1951613276&fm=253&fmt=auto&app=138&f=JPEG?w=1422&h=800",
+            "https://i2.3conline.com/images/piclib/200909/18/batch/1/40998/12532295224100c49al6l5e.jpg"
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print_demo_a4);
-        
+
         initViews();
         initListeners();
         mReportView.postDelayed(new Runnable() {
@@ -79,13 +78,13 @@ public class PrintDemoA4Activity extends AppCompatActivity {
                 // 第一次进入界面，默认加载自动加载并渲染
                 loadReportWithImageCount(8);
             }
-        },1000);
+        }, 1000);
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
-        
+
         // 从打印预览返回后，强制ReportView重新测量和布局
         // 这样可以恢复到正确的显示尺寸
         if (mReportView != null) {
@@ -100,7 +99,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         mReportView = findViewById(R.id.medical_report_view);
         mBtnPrint = findViewById(R.id.btn_print);
         mBtnBack = findViewById(R.id.btn_back);
-        
+
         // 初始化图片数量按钮
         mBtnImage1 = findViewById(R.id.btn_image_1);
         mBtnImage2 = findViewById(R.id.btn_image_2);
@@ -111,7 +110,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         mBtnImage7 = findViewById(R.id.btn_image_7);
         mBtnImage8 = findViewById(R.id.btn_image_8);
         mBtnImage9 = findViewById(R.id.btn_image_9);
-        
+
         // 初始化纸张大小按钮
         mBtnPaperA4 = findViewById(R.id.btn_paper_a4);
         mBtnPaperA5 = findViewById(R.id.btn_paper_a5);
@@ -119,9 +118,9 @@ public class PrintDemoA4Activity extends AppCompatActivity {
 
     private void initListeners() {
         mBtnBack.setOnClickListener(v -> finish());
-        
+
         mBtnPrint.setOnClickListener(v -> printReport());
-        
+
         // 设置图片数量按钮的点击事件
         View.OnClickListener imageCountClickListener = new View.OnClickListener() {
             @Override
@@ -136,18 +135,18 @@ public class PrintDemoA4Activity extends AppCompatActivity {
                 else if (v.getId() == R.id.btn_image_7) imageCount = 7;
                 else if (v.getId() == R.id.btn_image_8) imageCount = 8;
                 else if (v.getId() == R.id.btn_image_9) imageCount = 9;
-                
+
                 Log.d(TAG, "按钮点击: 选择了 " + imageCount + " 张图片");
                 mCurrentImageCount = imageCount;
-                
+
                 // 自动加载并渲染
                 loadReportWithImageCount(imageCount);
-                
-                Toast.makeText(PrintDemoA4Activity.this, 
-                    "已选择" + imageCount + "张图片模板", Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(PrintDemoA4Activity.this,
+                        "已选择" + imageCount + "张图片模板", Toast.LENGTH_SHORT).show();
             }
         };
-        
+
         mBtnImage1.setOnClickListener(imageCountClickListener);
         mBtnImage2.setOnClickListener(imageCountClickListener);
         mBtnImage3.setOnClickListener(imageCountClickListener);
@@ -157,40 +156,40 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         mBtnImage7.setOnClickListener(imageCountClickListener);
         mBtnImage8.setOnClickListener(imageCountClickListener);
         mBtnImage9.setOnClickListener(imageCountClickListener);
-        
+
         // 设置纸张大小按钮的点击事件
         mBtnPaperA4.setOnClickListener(v -> {
             mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A4;
             mReportView.setPaperSize(mCurrentPaperSize);
             updatePaperSizeButtonState();
-            
+
             // 如果已经加载了报告，重新渲染
             if (mReportLabels != null && mImageAreaLabels != null) {
                 loadReportWithImageCount(mCurrentImageCount);
             }
-            
+
             Toast.makeText(PrintDemoA4Activity.this, "已切换到A4纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到A4纸张");
         });
-        
+
         mBtnPaperA5.setOnClickListener(v -> {
             mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A5;
             mReportView.setPaperSize(mCurrentPaperSize);
             updatePaperSizeButtonState();
-            
+
             // 如果已经加载了报告，重新渲染
             if (mReportLabels != null && mImageAreaLabels != null) {
                 loadReportWithImageCount(mCurrentImageCount);
             }
-            
+
             Toast.makeText(PrintDemoA4Activity.this, "已切换到A5纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到A5纸张");
         });
-        
+
         // 初始化按钮状态
         updatePaperSizeButtonState();
     }
-    
+
     /**
      * 更新纸张大小按钮的状态
      */
@@ -210,24 +209,24 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private void loadReportWithImageCount(int imageCount) {
         try {
             Log.d(TAG, "开始加载报告，图片数量: " + imageCount);
-            
+
             // 1. 读取报告模板
             mReportLabels = readReportXml();
-            
+
             // 2. 读取图片区域模板
             mImageAreaLabels = readImageAreaXml(String.valueOf(imageCount));
-            
+
             // 3. 调整报告布局
             adjustReportLayout();
-            
+
             // 4. 设置数据到View
             mReportView.setReportData(mReportLabels, mImageAreaLabels);
-            
+
             // 5. 加载图片
             loadImages(imageCount);
-            
+
             Toast.makeText(this, "报告加载完成", Toast.LENGTH_SHORT).show();
-            
+
         } catch (Exception e) {
             Log.e(TAG, "加载报告失败", e);
             Toast.makeText(this, "加载报告失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -244,7 +243,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         SAXParser parser = factory.newSAXParser();
         parser.parse(is, saxHelper);
         is.close();
-        
+
         ArrayList<LabelBean> dataList = saxHelper.getDataList();
         return getSortList(dataList);
     }
@@ -255,15 +254,15 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private ArrayList<LabelBean> readImageAreaXml(String imageCount) throws Exception {
         String fileName = "检查0" + imageCount + "图.xml";
         Log.d(TAG, "读取图片区域XML: " + fileName);
-        
+
         InputStream is = getAssets().open(fileName);
-        
+
         SaxHelper2Text saxHelper = new SaxHelper2Text();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
         parser.parse(is, saxHelper);
         is.close();
-        
+
         ArrayList<LabelBean> dataList = saxHelper.getDataList();
         Log.d(TAG, "读取到 " + dataList.size() + " 个图片区域元素");
         return getSortList(dataList);
@@ -278,7 +277,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         if (mReportLabels == null || mImageAreaLabels == null) {
             return;
         }
-        
+
         // ========== 固定位置常量 ==========
         // A区域（固定不变）的原始位置
         final int A_AREA_PATHOLOGY_TOP = 955;      // 病理学原始Top
@@ -286,25 +285,25 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         final int A_AREA_SUGGESTION_TOP = 1000;    // 建议原始Top
         final int A_AREA_BOTTOM_LINE_TOP = 1021;   // 底部分界线原始Top
         final int A_AREA_BOTTOM_ELEMENTS_TOP = 1024; // 地址/医院电话/检查医生原始Top
-        
+
         // A区域的总高度（从病理学到底部元素结束）
         final int A_AREA_HEIGHT = 87;  // 病理学(18) + 间距(3) + 活检部位(18) + 间距(3) + 建议(18) + 间距(3) + 分界线(3) + 底部元素(18) + 间距(3)
-        
+
         int nBottom = 1;
         int nNum = 0;
         int vpimage1 = 0;  // 默认图片区域高度
         int vpimage2 = 0;  // 选中模板的图片区域高度
-        
+
         // 第一步：获取原始模板中的图像区域高度
         for (int i = 0; i < mReportLabels.size(); i++) {
             LabelBean mBean = mReportLabels.get(i);
-            
+
             if (mBean.getType().equals("图像区域")) {
                 nNum = i;
                 vpimage1 = Integer.parseInt(mBean.getBottom()) - Integer.parseInt(mBean.getTop());
             }
         }
-        
+
         // 第二步：计算选中模板的图像区域高度
         int maxImageBottom = 0;
         int minImageTop = Integer.MAX_VALUE;
@@ -314,10 +313,10 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             int mNewTop = (Integer.parseInt(mBean.getTop()) + nBottom);
             mBean.setTop(mNewTop + "");
             mBean.setBottom(mNewBottom + "");
-            
+
             // 找到所有图像元素的最大Bottom和最小Top
-            if (mBean.getType().equals("Image") || mBean.getType().equals("imgRect") || 
-                mBean.getType().equals("ImageDesc") || mBean.getType().equals("ImageSketch")) {
+            if (mBean.getType().equals("Image") || mBean.getType().equals("imgRect") ||
+                    mBean.getType().equals("ImageDesc") || mBean.getType().equals("ImageSketch")) {
                 if (mNewBottom > maxImageBottom) {
                     maxImageBottom = mNewBottom;
                 }
@@ -326,16 +325,16 @@ public class PrintDemoA4Activity extends AppCompatActivity {
                 }
             }
         }
-        
+
         vpimage2 = maxImageBottom - minImageTop;
         int heightDiff = vpimage2 - vpimage1;  // 图像高度差值
-        
+
         Log.d(TAG, "========== 布局调整开始 ==========");
         Log.d(TAG, "调整布局: vpimage1(默认图像高度)=" + vpimage1);
         Log.d(TAG, "调整布局: vpimage2(选中模板图像高度)=" + vpimage2);
         Log.d(TAG, "调整布局: 图像高度差值=" + heightDiff);
         Log.d(TAG, "调整布局: 图像区域底部=" + maxImageBottom);
-        
+
         // 第三步：计算A区域的新位置（保持原始布局不变）
         // A区域从原始位置开始，保持固定
         int areaPathologyTop = A_AREA_PATHOLOGY_TOP;
@@ -343,54 +342,54 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         int areaSuggestionTop = A_AREA_SUGGESTION_TOP;
         int areaBottomLineTop = A_AREA_BOTTOM_LINE_TOP;
         int areaBottomElementsTop = A_AREA_BOTTOM_ELEMENTS_TOP;
-        
+
         Log.d(TAG, "调整布局: A区域起始位置(病理学Top)=" + areaPathologyTop);
-        
+
         // 第四步：计算镜检所见和镜检诊断的可用空间
         // 镜检所见标题的新Top = 图像底部 + 间距
         int seeContentTitleTop = maxImageBottom + 10;
         int seeContentTitleBottom = seeContentTitleTop + 18;  // 标题高度18
-        
+
         // 镜检所见内容的新Top
         int seeContentTop = seeContentTitleBottom + 2;
-        
+
         // 可用空间 = A区域起始位置 - 镜检所见内容起始位置 - 镜检诊断标题高度(20) - 间距
         int availableSpace = areaPathologyTop - seeContentTop - 20 - 3;  // 减去镜检诊断标题(18+2)和间距(3)
-        
+
         Log.d(TAG, "调整布局: 镜检所见内容起始Top=" + seeContentTop);
         Log.d(TAG, "调整布局: 可用空间=" + availableSpace + " (从" + seeContentTop + "到" + areaPathologyTop + ")");
-        
+
         // 确保可用空间为正数
         if (availableSpace < 60) {
             Log.w(TAG, "警告: 可用空间不足，调整为最小值60");
             availableSpace = 60;
         }
-        
+
         // 镜检所见和镜检诊断按2:1比例分配空间
         // 镜检所见占2/3，镜检诊断占1/3
         int seeContentHeight = (availableSpace * 2) / 3;
         int diagnosisContentHeight = availableSpace - seeContentHeight;
-        
+
         int seeContentBottom = seeContentTop + seeContentHeight;
-        
+
         // 镜检诊断标题
         int diagnosisTitleTop = seeContentBottom + 2;
         int diagnosisTitleBottom = diagnosisTitleTop + 18;
-        
+
         // 镜检诊断内容
         int diagnosisContentTop = diagnosisTitleBottom + 2;
         int diagnosisContentBottom = diagnosisContentTop + diagnosisContentHeight;
-        
+
         Log.d(TAG, "调整布局: 镜检所见内容 Top=" + seeContentTop + ", Bottom=" + seeContentBottom + ", 高度=" + seeContentHeight);
         Log.d(TAG, "调整布局: 镜检诊断内容 Top=" + diagnosisContentTop + ", Bottom=" + diagnosisContentBottom + ", 高度=" + diagnosisContentHeight);
         Log.d(TAG, "调整布局: 镜检诊断Bottom到A区域Top的间距=" + (areaPathologyTop - diagnosisContentBottom));
         Log.d(TAG, "========== 布局调整结束 ==========");
-        
+
         // 第四步：应用调整到所有元素
         int t = 0;
         int tF = 0;
         int tz = 10;
-        
+
         for (int i = nNum + 1; i < mReportLabels.size(); i++) {
             LabelBean mBean = mReportLabels.get(i);
             int top = Integer.parseInt(mBean.getTop());
@@ -398,13 +397,13 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             String order = mBean.getOrder();
             String type = mBean.getType();
             String content = mBean.getContent();
-            
+
             if (i == nNum + 1) {
                 t = vpimage2 - vpimage1;
                 int nLastBottom = maxImageBottom;
                 nBottom = (nLastBottom - top) - t;
             }
-            
+
             // 调整图像区域下方的第一条分界线
             if (order.equals("7") && tF == 0 && content.equals("分界线") && top > 400) {
                 tF = 1;
@@ -441,8 +440,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             else if (order.equals("42") && type.equals("Caption")) {
                 mBean.setTop(areaPathologyTop + "");
                 mBean.setBottom((areaPathologyTop + 18) + "");
-            }
-            else if (order.equals("42") && content.equals("病理学") && type.equals("Edit")) {
+            } else if (order.equals("42") && content.equals("病理学") && type.equals("Edit")) {
                 mBean.setTop(areaPathologyTop + "");
                 mBean.setBottom((areaPathologyTop + 18) + "");
             }
@@ -450,8 +448,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             else if (order.equals("41") && type.equals("Caption")) {
                 mBean.setTop(areaBiopsyTop + "");
                 mBean.setBottom((areaBiopsyTop + 18) + "");
-            }
-            else if (order.equals("43") && content.equals("活检") && type.equals("Edit")) {
+            } else if (order.equals("43") && content.equals("活检") && type.equals("Edit")) {
                 mBean.setTop(areaBiopsyTop + "");
                 mBean.setBottom((areaBiopsyTop + 18) + "");
             }
@@ -488,12 +485,12 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private void loadImages(int imageCount) {
         // 先清除旧图片缓存，防止OOM
         mReportView.clearImageCache();
-        
+
         for (int i = 0; i < imageCount && i < mImageUrls.length; i++) {
             String order = String.valueOf(i + 1);
             mReportView.setImageUrl(order, mImageUrls[i]);
         }
-        
+
         mReportView.setImageUrl("logo", "https://img0.baidu.com/it/u=122751848,1783287837&fm=253&fmt=auto&app=138&f=JPEG?w=693&h=500");
     }
 
@@ -505,21 +502,21 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             Toast.makeText(this, "请先选择图片数量加载报告", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         // 检查图片是否加载完成
         if (!checkImagesLoaded()) {
             Toast.makeText(this, "图片正在加载中，请稍后再试", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+
         try {
             // 获取打印管理器
             PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
-            
+
             // 配置打印属性
             PrintAttributes.Builder builder = new PrintAttributes.Builder();
             builder.setColorMode(PrintAttributes.COLOR_MODE_COLOR);  // 彩色打印
-            
+
             // 根据当前纸张大小设置
             if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A5) {
                 builder.setMediaSize(PrintAttributes.MediaSize.ISO_A5);  // A5纸张
@@ -528,29 +525,29 @@ public class PrintDemoA4Activity extends AppCompatActivity {
                 builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);  // A4纸张
                 Log.d(TAG, "打印纸张: A4");
             }
-            
+
             builder.setResolution(new PrintAttributes.Resolution("high_quality", "高质量", 300, 300));  // 300 DPI
             builder.setMinMargins(PrintAttributes.Margins.NO_MARGINS);  // 无边距
-            
+
             PrintAttributes printAttributes = builder.build();
-            
+
             // 创建打印适配器
-            com.shenma.printtest.print.MedicalReportPrintAdapter printAdapter = 
-                new com.shenma.printtest.print.MedicalReportPrintAdapter(this, mReportView);
-            
+            com.shenma.printtest.print.MedicalReportPrintAdapter printAdapter =
+                    new com.shenma.printtest.print.MedicalReportPrintAdapter(this, mReportView);
+
             // 开始打印任务
             String jobName = "医用报告_" + System.currentTimeMillis();
             PrintJob printJob = printManager.print(jobName, printAdapter, printAttributes);
-            
+
             Log.d(TAG, "打印任务已创建: " + jobName);
             Toast.makeText(this, "正在准备打印...", Toast.LENGTH_SHORT).show();
-            
+
         } catch (Exception e) {
             Log.e(TAG, "打印失败", e);
             Toast.makeText(this, "打印失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-    
+
     /**
      * 检查图片是否加载完成
      */
