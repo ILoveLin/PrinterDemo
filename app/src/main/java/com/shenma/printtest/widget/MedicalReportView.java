@@ -42,7 +42,7 @@ import java.util.concurrent.Future;
  * 支持1-9张图片的医用报告渲染
  * 使用自定义View渲染医用报告
  * author： LoveLin
- * time：2025/12/1 
+ * time：2025/12/1
  */
 public class MedicalReportView extends View {
     private static final String TAG = "MedicalReportView";
@@ -50,11 +50,14 @@ public class MedicalReportView extends View {
     // 纸张尺寸常量 (以像素为单位，基于72 DPI)
     public static final int PAPER_SIZE_A4 = 0;
     public static final int PAPER_SIZE_A5 = 1;
+    public static final int PAPER_SIZE_B5 = 2;
     
     private static final float A4_WIDTH = 595f;
     private static final float A4_HEIGHT = 842f;
     private static final float A5_WIDTH = 420f;
     private static final float A5_HEIGHT = 595f;
+    private static final float B5_WIDTH = 499f;
+    private static final float B5_HEIGHT = 709f;
     
     private int mPaperSize = PAPER_SIZE_A4;  // 默认A4
     private float mPaperWidth = A4_WIDTH;
@@ -351,6 +354,9 @@ public class MedicalReportView extends View {
         if (paperSize == PAPER_SIZE_A5) {
             mPaperWidth = A5_WIDTH;
             mPaperHeight = A5_HEIGHT;
+        } else if (paperSize == PAPER_SIZE_B5) {
+            mPaperWidth = B5_WIDTH;
+            mPaperHeight = B5_HEIGHT;
         } else {
             mPaperWidth = A4_WIDTH;
             mPaperHeight = A4_HEIGHT;
@@ -395,10 +401,15 @@ public class MedicalReportView extends View {
         // 根据纸张类型计算实际显示宽度
         // A4纸张：使用基准宽度
         // A5纸张：按照A5与A4的宽度比例缩小
+        // B5纸张：按照B5与A4的宽度比例缩小
         if (mPaperSize == PAPER_SIZE_A5) {
             // A5宽度是A4宽度的 420/595 ≈ 0.706
             float a5ToA4Ratio = A5_WIDTH / A4_WIDTH;
             mViewWidth = (int) (baseDisplayWidth * a5ToA4Ratio);
+        } else if (mPaperSize == PAPER_SIZE_B5) {
+            // B5宽度是A4宽度的 499/595 ≈ 0.839
+            float b5ToA4Ratio = B5_WIDTH / A4_WIDTH;
+            mViewWidth = (int) (baseDisplayWidth * b5ToA4Ratio);
         } else {
             // A4纸张使用基准宽度
             mViewWidth = baseDisplayWidth;
@@ -416,7 +427,9 @@ public class MedicalReportView extends View {
         // 计算缩放比例，保持纸张比例
         mScaleRatio = mViewWidth / mPaperWidth;
         
-        Log.d("MedicalReportView", "纸张: " + (mPaperSize == PAPER_SIZE_A5 ? "A5" : "A4") + 
+        String paperType = mPaperSize == PAPER_SIZE_A5 ? "A5" : 
+                          (mPaperSize == PAPER_SIZE_B5 ? "B5" : "A4");
+        Log.d("MedicalReportView", "纸张: " + paperType + 
               ", 显示尺寸: " + mViewWidth + "x" + mViewHeight + 
               ", 缩放比例: " + mScaleRatio);
         
@@ -828,17 +841,21 @@ public class MedicalReportView extends View {
     /**
      * 转换X坐标
      * 1. Windows 96 DPI -> Android 72 DPI
-     * 2. 如果是A5纸张，需要额外缩放坐标
+     * 2. 如果是A5或B5纸张，需要额外缩放坐标
      */
     private float convertX(float windowsX) {
         // 第一步：DPI转换 (Windows 96 DPI -> Android 72 DPI)
         float androidX = (windowsX / 96f) * 72f;
         
-        // 第二步：如果是A5纸张，需要按比例缩放坐标
-        // XML模板中的坐标是基于A4纸张的，需要转换到A5坐标系
+        // 第二步：如果是A5或B5纸张，需要按比例缩放坐标
+        // XML模板中的坐标是基于A4纸张的，需要转换到对应纸张坐标系
         if (mPaperSize == PAPER_SIZE_A5) {
             // A5宽度是A4宽度的 420/595
             float scaleRatio = A5_WIDTH / A4_WIDTH;
+            androidX = androidX * scaleRatio;
+        } else if (mPaperSize == PAPER_SIZE_B5) {
+            // B5宽度是A4宽度的 499/595
+            float scaleRatio = B5_WIDTH / A4_WIDTH;
             androidX = androidX * scaleRatio;
         }
         
@@ -848,17 +865,21 @@ public class MedicalReportView extends View {
     /**
      * 转换Y坐标
      * 1. Windows 96 DPI -> Android 72 DPI
-     * 2. 如果是A5纸张，需要额外缩放坐标
+     * 2. 如果是A5或B5纸张，需要额外缩放坐标
      */
     private float convertY(float windowsY) {
         // 第一步：DPI转换 (Windows 96 DPI -> Android 72 DPI)
         float androidY = (windowsY / 96f) * 72f;
         
-        // 第二步：如果是A5纸张，需要按比例缩放坐标
-        // XML模板中的坐标是基于A4纸张的，需要转换到A5坐标系
+        // 第二步：如果是A5或B5纸张，需要按比例缩放坐标
+        // XML模板中的坐标是基于A4纸张的，需要转换到对应纸张坐标系
         if (mPaperSize == PAPER_SIZE_A5) {
             // A5高度是A4高度的 595/842
             float scaleRatio = A5_HEIGHT / A4_HEIGHT;
+            androidY = androidY * scaleRatio;
+        } else if (mPaperSize == PAPER_SIZE_B5) {
+            // B5高度是A4高度的 709/842
+            float scaleRatio = B5_HEIGHT / A4_HEIGHT;
             androidY = androidY * scaleRatio;
         }
         
@@ -868,16 +889,19 @@ public class MedicalReportView extends View {
     /**
      * 转换字体大小
      * 1. Windows字体大小 -> Android字体大小
-     * 2. 如果是A5纸张，需要按比例缩放字体
+     * 2. 如果是A5或B5纸张，需要按比例缩放字体
      */
     private float convertFontSize(float windowsFontSize) {
         // 第一步：Windows字体大小转换为Android字体大小
         float androidFontSize = windowsFontSize / (1440f / 72f);
         
-        // 第二步：如果是A5纸张，需要按比例缩放字体
+        // 第二步：如果是A5或B5纸张，需要按比例缩放字体
         // 使用宽度比例来缩放字体，保持视觉一致性
         if (mPaperSize == PAPER_SIZE_A5) {
             float scaleRatio = A5_WIDTH / A4_WIDTH;
+            androidFontSize = androidFontSize * scaleRatio;
+        } else if (mPaperSize == PAPER_SIZE_B5) {
+            float scaleRatio = B5_WIDTH / A4_WIDTH;
             androidFontSize = androidFontSize * scaleRatio;
         }
         

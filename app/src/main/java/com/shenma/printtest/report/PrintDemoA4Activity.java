@@ -45,7 +45,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
     private Button mBtnBack;
     private Button mBtnImage1, mBtnImage2, mBtnImage3, mBtnImage4, mBtnImage5;
     private Button mBtnImage6, mBtnImage7, mBtnImage8, mBtnImage9;
-    private Button mBtnPaperA4, mBtnPaperA5;  // 纸张大小选择按钮
+    private Button mBtnPaperA4, mBtnPaperA5, mBtnPaperB5;  // 纸张大小选择按钮
     private int mCurrentImageCount = 6; // 当前选择的图片数量
     private int mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A4; // 当前纸张大小，默认A4
 
@@ -114,6 +114,7 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         // 初始化纸张大小按钮
         mBtnPaperA4 = findViewById(R.id.btn_paper_a4);
         mBtnPaperA5 = findViewById(R.id.btn_paper_a5);
+        mBtnPaperB5 = findViewById(R.id.btn_paper_b5);
     }
 
     private void initListeners() {
@@ -160,30 +161,29 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         // 设置纸张大小按钮的点击事件
         mBtnPaperA4.setOnClickListener(v -> {
             mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A4;
-            mReportView.setPaperSize(mCurrentPaperSize);
             updatePaperSizeButtonState();
-
-            // 如果已经加载了报告，重新渲染
-            if (mReportLabels != null && mImageAreaLabels != null) {
-                loadReportWithImageCount(mCurrentImageCount);
-            }
-
+            // 重新加载报告
+            loadReportWithImageCount(mCurrentImageCount);
             Toast.makeText(PrintDemoA4Activity.this, "已切换到A4纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到A4纸张");
         });
 
         mBtnPaperA5.setOnClickListener(v -> {
             mCurrentPaperSize = MedicalReportView.PAPER_SIZE_A5;
-            mReportView.setPaperSize(mCurrentPaperSize);
             updatePaperSizeButtonState();
-
-            // 如果已经加载了报告，重新渲染
-            if (mReportLabels != null && mImageAreaLabels != null) {
-                loadReportWithImageCount(mCurrentImageCount);
-            }
-
+            // 重新加载报告
+            loadReportWithImageCount(mCurrentImageCount);
             Toast.makeText(PrintDemoA4Activity.this, "已切换到A5纸张", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "切换到A5纸张");
+        });
+
+        mBtnPaperB5.setOnClickListener(v -> {
+            mCurrentPaperSize = MedicalReportView.PAPER_SIZE_B5;
+            updatePaperSizeButtonState();
+            // 重新加载报告
+            loadReportWithImageCount(mCurrentImageCount);
+            Toast.makeText(PrintDemoA4Activity.this, "已切换到B5纸张", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "切换到B5纸张");
         });
 
         // 初始化按钮状态
@@ -197,9 +197,15 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A4) {
             mBtnPaperA4.setEnabled(false);
             mBtnPaperA5.setEnabled(true);
-        } else {
+            mBtnPaperB5.setEnabled(true);
+        } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A5) {
             mBtnPaperA4.setEnabled(true);
             mBtnPaperA5.setEnabled(false);
+            mBtnPaperB5.setEnabled(true);
+        } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_B5) {
+            mBtnPaperA4.setEnabled(true);
+            mBtnPaperA5.setEnabled(true);
+            mBtnPaperB5.setEnabled(false);
         }
     }
 
@@ -208,7 +214,10 @@ public class PrintDemoA4Activity extends AppCompatActivity {
      */
     private void loadReportWithImageCount(int imageCount) {
         try {
-            Log.d(TAG, "开始加载报告，图片数量: " + imageCount);
+            Log.d(TAG, "开始加载报告，图片数量: " + imageCount + ", 纸张类型: " + getPaperSizeName());
+
+            // 0. 先设置纸张大小，确保View使用正确的尺寸
+            mReportView.setPaperSize(mCurrentPaperSize);
 
             // 1. 读取报告模板
             mReportLabels = readReportXml();
@@ -230,6 +239,19 @@ public class PrintDemoA4Activity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "加载报告失败", e);
             Toast.makeText(this, "加载报告失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 获取当前纸张大小名称
+     */
+    private String getPaperSizeName() {
+        if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A5) {
+            return "A5";
+        } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_B5) {
+            return "B5";
+        } else {
+            return "A4";
         }
     }
 
@@ -521,6 +543,9 @@ public class PrintDemoA4Activity extends AppCompatActivity {
             if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_A5) {
                 builder.setMediaSize(PrintAttributes.MediaSize.ISO_A5);  // A5纸张
                 Log.d(TAG, "打印纸张: A5");
+            } else if (mCurrentPaperSize == MedicalReportView.PAPER_SIZE_B5) {
+                builder.setMediaSize(PrintAttributes.MediaSize.JIS_B5);  // B5纸张
+                Log.d(TAG, "打印纸张: B5");
             } else {
                 builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);  // A4纸张
                 Log.d(TAG, "打印纸张: A4");
