@@ -42,7 +42,7 @@
 | 图3(报告预览) | 图4(A5) |
 | <img src="picture/report/自定义View_使用网络图片_打印报告预留图03.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图04.jpg" width="350" /> |
 | 图5(B5) | 图6(A3) |
-| <img src="picture/report/自定义View_使用网络图片_打印报告预览图05.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预览图06.jpg" width="350" /> |
+| <img src="picture/report/自定义View_使用网络图片_打印报告预留图05.jpg" width="350" /> | <img src="picture/report/自定义View_使用网络图片_打印报告预留图06.jpg" width="350" /> |
 
 ## 使用指南
 
