@@ -14,9 +14,9 @@
 * //打印自定义文档链接地址:
 * https://developer.android.google.cn/training/printing/custom-docs?hl=zh-cn
  
-## 总结：同一个局域网下,搜索wifi下的网络打印机,请使用自定义MedicalReportView画报告图，然后预览和打印报告，因为不仅更高效分辨率最清晰
-## 总结：同一个局域网下,搜索wifi下的网络打印机,请使用自定义MedicalReportView画报告图，然后预览和打印报告，因为不仅更高效分辨率最清晰
-## 总结：同一个局域网下,搜索wifi下的网络打印机,请使用自定义MedicalReportView画报告图，然后预览和打印报告，因为不仅更高效分辨率最清晰
+## 总结：同一个局域网下,搜索wifi下的网络打印机,请使用自定义MedicalReportView画报告图，然后预览和打印报告，更高效,分辨率最清晰
+## 总结：同一个局域网下,搜索wifi下的网络打印机,请使用自定义MedicalReportView画报告图，然后预览和打印报告，更高效,分辨率最清晰
+## 总结：同一个局域网下,搜索wifi下的网络打印机,请使用自定义MedicalReportView画报告图，然后预览和打印报告，更高效,分辨率最清晰
 
 ## 常见问题解决方案 
 
